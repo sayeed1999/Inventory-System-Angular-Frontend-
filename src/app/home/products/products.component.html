@@ -1,0 +1,87 @@
+<shared-dialog *ngIf="isModal" (emitter)="isModal = $event" >
+  
+    <form fxLayout="column" [formGroup]="productForm" (ngSubmit)="onFormSubmit()">
+      
+      <mat-form-field>
+        <input matInput name="Name" formControlName="Name" placeholder="Name">
+      </mat-form-field>
+      
+      <mat-form-field>
+        <input type="number" matInput name="Price" formControlName="Price" placeholder="Price">
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill">
+        <mat-label>Select</mat-label>
+        <mat-select formControlName="CategoryId">
+          <mat-option *ngFor="let option of this.categoryService.GetAllCategories()" [value]="option.Id"> {{ option.Name }} </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <div style="display: flex;">
+        <div style="flex-grow: 1;"></div>
+        <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
+        <button mat-raised-button color="accent" [disabled]="!isValid()" >Create</button>
+      </div>
+
+    </form>
+  
+</shared-dialog>
+  
+<margin-top></margin-top>
+  
+  <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px">
+    <h2 style="font-weight: 400;">Product Table</h2>
+    <gorgeous-button style="margin-left: auto;" (click)="isModal = true" >New Product</gorgeous-button>
+    <mat-form-field>
+      <input matInput [(ngModel)]="searchKeyword" (ngModelChange)="searching()" name="search" placeholder="Search Product">
+    </mat-form-field>
+  </div>
+
+  <!-- search by category -->
+  <mat-form-field appearance="fill">
+    <mat-label>Show By Category</mat-label>
+    <mat-select [(ngModel)]="searchByCategoryId" (ngModelChange)="searchingByCategory()">
+      <mat-option value="0"> All </mat-option>
+      <mat-option *ngFor="let option of this.categoryService.GetAllCategories()" [value]="option.Id"> {{ option.Name }} </mat-option>
+    </mat-select>
+  </mat-form-field>
+  
+
+  
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+    
+      <ng-container matColumnDef="Id">
+        <th mat-header-cell *matHeaderCellDef> Id </th>
+        <td mat-cell *matCellDef="let element"> {{element.Id}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="Name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.Name}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="Price">
+        <th mat-header-cell *matHeaderCellDef> Price </th>
+        <td mat-cell *matCellDef="let element"> {{element.Price}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="CategoryId">
+        <th mat-header-cell *matHeaderCellDef> CategoryId </th>
+        <td mat-cell *matCellDef="let element"> {{element.CategoryId}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="Remove">
+        <th mat-header-cell *matHeaderCellDef> Remove </th>
+        <td mat-cell *matCellDef="let element; let i=index">
+          <button mat-icon-button (click)="deleteClicked(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
