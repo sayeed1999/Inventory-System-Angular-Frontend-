@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Customer } from '../models/Customer.model';
 import { Product } from '../models/Product.model';
-import { DisplaySale, Sale } from '../models/Sale.model';
+import { Sale } from '../models/Sale.model';
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +70,26 @@ export class SalesService {
         if(!res.success) throw new Error(res.message);
         let item = new Sale(res.data.id, res.data.productId, res.data.quantity, res.data.customerId, res.data.date)
         return item;
+      }),
+      catchError(err => {
+        throw new Error(err);
+      })
+    );
+  }
+
+  public UpdateSale(sale: Sale) : Observable<Sale>
+  {
+    return this.http.put<{ data: { id:number, productId:number, quantity:number, customerId:number, date:Date }, message:string, success:boolean }>(
+      `https://localhost:5001/sales/${sale.Id}`, //url
+      sale, //body
+      { //params
+        params: new HttpParams().set("Id", sale.Id),
+      }
+    ).pipe(
+      map(res => {
+        if(!res.success) throw new Error(res.message);
+        let sale = new Sale(res.data.id, res.data.productId, res.data.quantity, res.data.customerId, res.data.date);
+        return sale;
       }),
       catchError(err => {
         throw new Error(err);

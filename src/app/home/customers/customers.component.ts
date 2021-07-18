@@ -10,12 +10,14 @@ import { CustomerService } from 'src/app/services/customer.service';
 })
 export class CustomersComponent implements OnInit {
 
-  displayedColumns: string[] = ['Id', 'Name', 'Address', 'Contact', 'Remove'];
+  displayedColumns: string[] = ['Id', 'Name', 'Address', 'Contact', 'Edit', 'Remove'];
   dataSource: Customer[] = [];
   dataSourceCopy: Customer[] = [];
 
   searchKeyword: string = ''; // to work with our shared-modal
   isModal: boolean = false;
+  editScreen: boolean = false;
+  editId: number = 0;
 
   customerForm : FormGroup = new FormGroup({
     Name: new FormControl('', [Validators.required]),
@@ -62,10 +64,33 @@ export class CustomersComponent implements OnInit {
     );
   }
 
+  editClicked(index: number)
+  {
+    this.editScreen = true;
+    this.editId = this.dataSourceCopy[index].Id;
+    this.customerForm.controls.Name.setValue(this.dataSourceCopy[index].Name);
+    this.customerForm.controls.Address.setValue(this.dataSourceCopy[index].Address);
+    this.customerForm.controls.Contact.setValue(this.dataSourceCopy[index].Contact);
+    this.isModal = true;
+  }
+
   updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
   onFormSubmit() {
     this.isModal = false;
+
+    if(this.editScreen) 
+    {
+      var customer = new Customer(this.editId, this.customerForm.value.Name, this.customerForm.value.Address, this.customerForm.value.Contact);
+      this.customerService.UpdateCustomer(customer).subscribe(
+        (res: Customer) => {
+          this.fetchAll();
+        }, error => console.log(error),
+      );
+      this.editScreen = false;
+      return;
+    }
+
     this.customerService.AddCustomer(this.customerForm.value.Name, this.customerForm.value.Address, this.customerForm.value.Contact).subscribe(
       res => {
         this.fetchAll();

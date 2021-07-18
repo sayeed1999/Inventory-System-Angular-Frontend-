@@ -10,12 +10,14 @@ import { CategoryService } from 'src/app/services/category.service';
 })
 export class CategoriesComponent implements OnInit {
 
-  displayedColumns: string[] = ['Id', 'Name', 'Description', 'Remove'];
+  displayedColumns: string[] = ['Id', 'Name', 'Description', 'Edit', 'Remove'];
   dataSource: Category[] = [];
   dataSourceCopy: Category[] = []; // to be used in the UI
   searchKeyword: string = '';
   
   isModal: boolean = false;
+  editScreen: boolean = false;
+  editId: number = 0;
   
   categoryForm : FormGroup = new FormGroup({
     Name: new FormControl('', [Validators.required]),
@@ -48,9 +50,9 @@ export class CategoriesComponent implements OnInit {
     this.dataSourceCopy = this.dataSourceCopy.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
   }
 
-  deleteClicked(index: number)
+  deleteClicked(Id: number)
   {
-    this.categoryService.DeleteCategoryById( this.dataSource[index].Id ).subscribe(
+    this.categoryService.DeleteCategoryById( Id ).subscribe(
       (res: Category) => {
         // success
         this.fetchAll();
@@ -61,11 +63,33 @@ export class CategoriesComponent implements OnInit {
     );
   }
 
+  editClicked(index: number)
+  {
+    this.editScreen = true;
+    this.editId = this.dataSourceCopy[index].Id;
+    this.categoryForm.controls.Name.setValue(this.dataSourceCopy[index].Name);
+    this.categoryForm.controls.Description.setValue(this.dataSourceCopy[index].Description);
+    this.isModal = true;
+  }
+
   updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
-  // Add Category
+  // Add/Update Category
   onFormSubmit() {
     this.isModal = false;
+
+    if(this.editScreen) 
+    {
+      var category = new Category(this.editId, this.categoryForm.value.Name, this.categoryForm.value.Description);
+      this.categoryService.UpdateCategory(category).subscribe(
+        (res: Category) => {
+          this.fetchAll();
+        }, error => console.log(error),
+      );
+      this.editScreen = false;
+      return;
+    }
+
     this.categoryService.AddCategory(this.categoryForm.value.Name, this.categoryForm.value.Description).subscribe(
       (res: Category) => {
         // success

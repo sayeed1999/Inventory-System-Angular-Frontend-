@@ -73,4 +73,24 @@ export class StockService {
     );
   }
 
+  public UpdateStock(stock: Stock) : Observable<Stock>
+  {
+    return this.http.put<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message:string, success:boolean }>(
+      `https://localhost:5001/stocks/${stock.Id}`, //url
+      stock, //body
+      { //params
+        params: new HttpParams().set("Id", stock.Id),
+      }
+    ).pipe(
+      map(res => {
+        if(!res.success) throw new Error(res.message);
+        let stock = new Stock(res.data.id, res.data.productId, res.data.quantity, res.data.price, res.data.date);
+        return stock;
+      }),
+      catchError(err => {
+        throw new Error(err);
+      })
+    );
+  }
+
 }

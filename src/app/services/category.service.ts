@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, ObservedValueOf, Subject } from 'rxjs';
 import { Category } from '../models/Category.model';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -78,4 +78,25 @@ export class CategoryService {
       })
     );
   }
+
+  public UpdateCategory(category: Category) : Observable<Category>
+  {
+    return this.http.put<{ data: { id:number, name:string, description:string }, message:string, success:boolean }>(
+      `https://localhost:5001/categories/${category.Id}`, //url
+      category, //body
+      { //params
+        params: new HttpParams().set("Id", category.Id),
+      }
+    ).pipe(
+      map(res => {
+        if(!res.success) throw new Error(res.message);
+        let category = new Category(res.data.id, res.data.name, res.data.description);
+        return category;
+      }),
+      catchError(err => {
+        throw new Error(err);
+      })
+    );
+  }
+
 }

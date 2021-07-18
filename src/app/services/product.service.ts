@@ -92,4 +92,24 @@ export class ProductService {
     );
   }
 
+  public UpdateProduct(product: Product) : Observable<Product>
+  {
+    return this.http.put<{ data: { id:number, name:string, price:number, categoryId:number }, message:string, success:boolean }>(
+      `https://localhost:5001/products/${product.Id}`, //url
+      product, //body
+      { //params
+        params: new HttpParams().set("Id", product.Id),
+      }
+    ).pipe(
+      map(res => {
+        if(!res.success) throw new Error(res.message);
+        let product = new Product(res.data.id, res.data.name, res.data.price, res.data.categoryId);
+        return product;
+      }),
+      catchError(err => {
+        throw new Error(err);
+      })
+    );
+  }
+
 }

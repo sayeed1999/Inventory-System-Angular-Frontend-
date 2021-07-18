@@ -92,5 +92,24 @@ export class CustomerService {
     );
   }
 
+  public UpdateCustomer(customer: Customer) : Observable<Customer>
+  {
+    return this.http.put<{ data: { id:number, name:string, address:string, contact:number }, message:string, success:boolean }>(
+      `https://localhost:5001/customers/${customer.Id}`, //url
+      customer, //body
+      { //params
+        params: new HttpParams().set("Id", customer.Id),
+      }
+    ).pipe(
+      map(res => {
+        if(!res.success) throw new Error(res.message);
+        let category = new Customer(res.data.id, res.data.name, res.data.address, res.data.contact);
+        return category;
+      }),
+      catchError(err => {
+        throw new Error(err);
+      })
+    );
+  }
   
 }

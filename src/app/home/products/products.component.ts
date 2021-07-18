@@ -1,7 +1,5 @@
-import { DataSource } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { Category } from 'src/app/models/Category.model';
 import { Product } from 'src/app/models/Product.model';
 import { CategoryService } from 'src/app/services/category.service';
@@ -14,7 +12,7 @@ import { ProductService } from 'src/app/services/product.service';
 })
 export class ProductsComponent implements OnInit {
 
-  displayedColumns: string[] = ['Id', 'Name', 'Price', 'CategoryId', 'Remove'];
+  displayedColumns: string[] = ['Id', 'Name', 'Price', 'CategoryId', 'Edit', 'Remove'];
   dataSource: Product[] = [];
   dataSourceCopy: Product[] = [];
   allCategories: Category[] = [];
@@ -23,7 +21,8 @@ export class ProductsComponent implements OnInit {
   searchByCategoryId: number = 0;
 
   isModal: boolean = false;
-  toDestroy1!: Subscription;
+  editScreen: boolean = false;
+  editId: number = 0;
 
   productForm : FormGroup = new FormGroup({
     Name: new FormControl('', [Validators.required]),
@@ -85,10 +84,33 @@ export class ProductsComponent implements OnInit {
     this.searchKeyword = ''; this.searchByCategoryId = 0;
   }
 
+  editClicked(index: number)
+  {
+    this.editScreen = true;
+    this.editId = this.dataSourceCopy[index].Id;
+    this.productForm.controls.Name.setValue(this.dataSourceCopy[index].Name);
+    this.productForm.controls.Price.setValue(this.dataSourceCopy[index].Price);
+    this.productForm.controls.CategoryId.setValue(this.dataSourceCopy[index].CategoryId);
+    this.isModal = true;
+  }
+
   updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
   onFormSubmit() {
     this.isModal = false;
+
+    if(this.editScreen) 
+    {
+      var product = new Product(this.editId, this.productForm.value.Name, this.productForm.value.Price, this.productForm.value.CategoryId);
+      this.productService.UpdateProduct(product).subscribe(
+        (res: Product) => {
+          this.fetchAllProducts();
+        }, error => console.log(error),
+      );
+      this.editScreen = false;
+      return;
+    }
+
     this.productService.AddProduct(this.productForm.value.Name, this.productForm.value.Price, this.productForm.value.CategoryId).subscribe(
       res => {
         //success
