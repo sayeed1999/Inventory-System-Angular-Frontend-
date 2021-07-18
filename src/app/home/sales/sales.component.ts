@@ -1,10 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { Sale } from 'src/app/models/Sale.model';
+import { Customer } from 'src/app/models/Customer.model';
+import { Product } from 'src/app/models/Product.model';
+import { DisplaySale, Sale } from 'src/app/models/Sale.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { ProductService } from 'src/app/services/product.service';
 import { SalesService } from 'src/app/services/sales.service';
+
+export class Model {
+
+}
 
 @Component({
   selector: 'sales',
@@ -13,10 +18,11 @@ import { SalesService } from 'src/app/services/sales.service';
 })
 export class SalesComponent implements OnInit {
 
-  displayedColumns: string[] = ['Id', 'ProductId', 'Quantity', 'CustomerId', 'Date', 'Remove'];
+  displayedColumns: string[] = ['Id', 'Product', 'Quantity', 'Customer', 'Date', 'Remove'];
   dataSource: Sale[] = [];
+  dataSourceCopy: Sale[] = [];
+
   isModal: boolean = false;
-  toDestroy1!: Subscription;
 
   saleForm : FormGroup = new FormGroup({
     ProductId: new FormControl(0, [Validators.required]),
@@ -31,27 +37,50 @@ export class SalesComponent implements OnInit {
     public productService: ProductService
   ) { }
 
-  ngOnInit(): void {
-    this.updateDataSource();
-    this.toDestroy1 = this.saleService.change.subscribe(() => {
-      this.updateDataSource();
-    });
+  allCustomers: Customer[] = [];
+  allProducts: Product[] = [];
+
+  fetchAll() {
+    this.saleService.GetAllSales().subscribe(
+      (res: Sale[]) => {
+        this.dataSource = res;
+        this.updateDataSource();
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
-  ngOnDestroy() {
-    this.toDestroy1.unsubscribe();
+  ngOnInit(): void {
+    this.fetchAll();
   }
+
 
   deleteClicked(Id: number)
   {
-    this.saleService.DeleteSaleById( Id );
+    this.saleService.DeleteSaleById(Id).subscribe(
+      (res: Sale) => { //deleted one returned!
+        this.fetchAll();
+        this.updateDataSource();
+      },
+      error => console.log(error),
+    );
   }
 
-  updateDataSource = () => this.dataSource = this.saleService.GetAllSales();
+  updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
   onFormSubmit() {
     this.isModal = false;
-    this.saleService.AddSale(this.saleForm.value.ProductId, this.saleForm.value.Quantity, this.saleForm.value.CustomerId, this.saleForm.value.Date);
+    this.saleService.AddSale(this.saleForm.value.ProductId, this.saleForm.value.Quantity, this.saleForm.value.CustomerId, this.saleForm.value.Date)
+        .subscribe(
+            (res: Sale) => {
+              // added one..
+              this.fetchAll();
+              this.updateDataSource();
+            },
+            error => console.log(error),
+        );
     this.saleForm.reset();
   }
 

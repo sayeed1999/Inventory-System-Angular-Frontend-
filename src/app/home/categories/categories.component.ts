@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { Category } from 'src/app/models/Category.model';
 import { CategoryService } from 'src/app/services/category.service';
 
@@ -9,15 +8,15 @@ import { CategoryService } from 'src/app/services/category.service';
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.css']
 })
-export class CategoriesComponent implements OnInit, OnDestroy {
+export class CategoriesComponent implements OnInit {
 
   displayedColumns: string[] = ['Id', 'Name', 'Description', 'Remove'];
   dataSource: Category[] = [];
+  dataSourceCopy: Category[] = []; // to be used in the UI
   searchKeyword: string = '';
-  // to work with our shared-modal
+  
   isModal: boolean = false;
-  toDestroy1!: Subscription;
-
+  
   categoryForm : FormGroup = new FormGroup({
     Name: new FormControl('', [Validators.required]),
     Description: new FormControl('', []),
@@ -27,32 +26,55 @@ export class CategoriesComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
   ) { }
 
-  ngOnInit(): void {
-    this.updateDataSource();
-    this.toDestroy1 = this.categoryService.change.subscribe(() => {
-      this.updateDataSource();
-    });
+  fetchAll() {
+    this.categoryService.GetAllCategories().subscribe(
+      (res: Category[]) => {
+        this.dataSource = res;
+        this.updateDataSource();
+      },
+      error => {
+        console.log(error.message);
+      }
+    );
   }
 
-  ngOnDestroy() {
-    this.toDestroy1.unsubscribe();
+  ngOnInit(): void {
+    this.fetchAll();
   }
+
 
   searching() {
     this.updateDataSource();
-    this.dataSource = this.dataSource.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
+    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
   }
 
   deleteClicked(index: number)
   {
-    this.categoryService.DeleteCategoryById( this.dataSource[index].Id );
+    this.categoryService.DeleteCategoryById( this.dataSource[index].Id ).subscribe(
+      (res: Category) => {
+        // success
+        this.fetchAll();
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
-  updateDataSource = () => this.dataSource = this.categoryService.GetAllCategories();
+  updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
+  // Add Category
   onFormSubmit() {
     this.isModal = false;
-    this.categoryService.AddCategory(this.categoryForm.value.Name, this.categoryForm.value.Description);
+    this.categoryService.AddCategory(this.categoryForm.value.Name, this.categoryForm.value.Description).subscribe(
+      (res: Category) => {
+        // success
+        this.fetchAll();
+      },
+      error => {
+        console.log("error occurred while adding to db");
+      }
+    );
     this.categoryForm.reset();
   }
 

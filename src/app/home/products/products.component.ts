@@ -1,6 +1,8 @@
+import { DataSource } from '@angular/cdk/collections';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Category } from 'src/app/models/Category.model';
 import { Product } from 'src/app/models/Product.model';
 import { CategoryService } from 'src/app/services/category.service';
 import { ProductService } from 'src/app/services/product.service';
@@ -14,9 +16,12 @@ export class ProductsComponent implements OnInit {
 
   displayedColumns: string[] = ['Id', 'Name', 'Price', 'CategoryId', 'Remove'];
   dataSource: Product[] = [];
+  dataSourceCopy: Product[] = [];
+  allCategories: Category[] = [];
+
   searchKeyword: string = '';
   searchByCategoryId: number = 0;
-  // to work with our shared-modal
+
   isModal: boolean = false;
   toDestroy1!: Subscription;
 
@@ -31,39 +36,68 @@ export class ProductsComponent implements OnInit {
     public categoryService: CategoryService,
   ) { }
 
-  ngOnInit(): void {
-    this.updateDataSource();
-    this.toDestroy1 = this.productService.change.subscribe(() => {
-      this.updateDataSource();
-    });
+  fetchAllCategories() {
+    this.categoryService.GetAllCategories().subscribe(
+      (res: Category[]) => {
+        this.allCategories = res;
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
-  ngOnDestroy() {
-    this.toDestroy1.unsubscribe();
+  fetchAllProducts() {
+    this.productService.GetAllProducts().subscribe(
+      (res: Product[]) => {
+        this.dataSource = res;
+        this.dataSourceCopy = this.dataSource;
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  ngOnInit(): void {
+    this.fetchAllProducts();
+    this.fetchAllCategories();
   }
 
   searching() {
     this.updateDataSource();
-    this.dataSource = this.dataSource.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
+    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
   }
 
   searchingByCategory() {
     this.searchKeyword = '';
     this.updateDataSource();
-    if(this.searchByCategoryId > 0) this.dataSource = this.dataSource.filter(p => p.CategoryId === this.searchByCategoryId);
+    if(this.searchByCategoryId > 0) this.dataSourceCopy = this.dataSourceCopy.filter(p => p.CategoryId === this.searchByCategoryId);
   }
 
   deleteClicked(index: number)
   {
-    this.productService.DeleteProductById( this.dataSource[index].Id );
+    this.productService.DeleteProductById( this.dataSource[index].Id ).subscribe(
+      res => {
+        this.fetchAllProducts();
+      }, error => console.log(error),
+    );
     this.searchKeyword = ''; this.searchByCategoryId = 0;
   }
 
-  updateDataSource = () => this.dataSource = this.productService.GetAllProducts();
+  updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
   onFormSubmit() {
     this.isModal = false;
-    this.productService.AddProduct(this.productForm.value.Name, this.productForm.value.Price, this.productForm.value.CategoryId);
+    this.productService.AddProduct(this.productForm.value.Name, this.productForm.value.Price, this.productForm.value.CategoryId).subscribe(
+      res => {
+        //success
+        this.fetchAllProducts();
+      },
+      error => {
+        console.log(error);
+      }
+    );
     this.productForm.reset();
     this.searchKeyword = ''; this.searchByCategoryId = 0;  
   }

@@ -13,7 +13,7 @@
       <mat-form-field appearance="fill">
         <mat-label>Select</mat-label>
         <mat-select formControlName="CategoryId">
-          <mat-option *ngFor="let option of this.categoryService.GetAllCategories()" [value]="option.Id"> {{ option.Name }} </mat-option>
+          <mat-option *ngFor="let option of allCategories" [value]="option.Id"> {{ option.Name }} </mat-option>
         </mat-select>
       </mat-form-field>
       
@@ -37,21 +37,17 @@
     </mat-form-field>
   </div>
 
-  <!-- search by category -->
   <mat-form-field appearance="fill">
     <mat-label>Show By Category</mat-label>
     <mat-select [(ngModel)]="searchByCategoryId" (ngModelChange)="searchingByCategory()">
       <mat-option value="0"> All </mat-option>
-      <mat-option *ngFor="let option of this.categoryService.GetAllCategories()" [value]="option.Id"> {{ option.Name }} </mat-option>
+      <mat-option *ngFor="let option of allCategories" [value]="option.Id"> {{ option.Name }} </mat-option>
     </mat-select>
   </mat-form-field>
   
 
+  <table mat-table [dataSource]="dataSourceCopy" class="mat-elevation-z8">
   
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-  
-      <!--- Note that these columns can be defined in any order.
-            The actual rendered columns are set as a property on the row definition" -->
     
       <ng-container matColumnDef="Id">
         <th mat-header-cell *matHeaderCellDef> Id </th>

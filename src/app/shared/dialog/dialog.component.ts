@@ -15,7 +15,6 @@ export class DialogComponent implements OnInit {
   }
 
   close() {
-    console.log('closed modal')
     this.emitter.emit(false);
   }
 

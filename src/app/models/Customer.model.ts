@@ -4,6 +4,5 @@ export class Customer {
         public Name: string,
         public Address: string,
         public Contact: number,
-        public Email?: string,
     ) {}
 }

@@ -13,10 +13,11 @@ export class StocksComponent implements OnInit {
 
   displayedColumns: string[] = ['Id', 'ProductId', 'Quantity', 'Price', 'Date', 'Remove'];
   dataSource: Stock[] = [];
+  dataSourceCopy: Stock[] = [];
+
   // to work with our shared-modal
   isModal: boolean = false;
-  toDestroy1!: Subscription;
-
+  
   stockForm : FormGroup = new FormGroup({
     ProductId: new FormControl('', [Validators.required]),
     Quantity: new FormControl(0, [Validators.required]),
@@ -28,27 +29,40 @@ export class StocksComponent implements OnInit {
     private stockService: StockService,
   ) { }
 
-  ngOnInit(): void {
-    this.updateDataSource();
-    this.toDestroy1 = this.stockService.change.subscribe(() => {
-      this.updateDataSource();
-    });
+  fetchAll() {
+    this.stockService.GetAllStocks().subscribe(
+      (res: Stock[]) => {//success
+        this.dataSource = res;
+        this.dataSourceCopy = [ ...this.dataSource ];
+      }, error => console.log(error),
+    );
   }
 
-  ngOnDestroy() {
-    this.toDestroy1.unsubscribe();
+  ngOnInit(): void {
+    this.fetchAll();
   }
 
   deleteClicked(Id: number)
   {
-    this.stockService.DeleteStockById( Id );
+    this.stockService.DeleteStockById( Id ).subscribe(res => {
+      this.fetchAll();
+    }, error => {
+      console.log(error);
+    });
   }
 
-  updateDataSource = () => this.dataSource = this.stockService.GetAllStocks();
+  updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
   onFormSubmit() {
     this.isModal = false;
-    this.stockService.AddStock(this.stockForm.value.ProductId, this.stockForm.value.Quantity, this.stockForm.value.Price, this.stockForm.value.Date);
+    this.stockService.AddStock(this.stockForm.value.ProductId, this.stockForm.value.Quantity, this.stockForm.value.Price, this.stockForm.value.Date)
+      .subscribe(
+        res => {
+          this.fetchAll(); //success
+        }, error => {
+          console.log(error);
+        }
+      );
     this.stockForm.reset();
   }
 

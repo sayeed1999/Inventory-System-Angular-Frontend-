@@ -17,6 +17,7 @@ import { MarginTopComponent } from './shared/margin-top/margin-top.component';
 import { DialogComponent } from './shared/dialog/dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SalesComponent } from './home/sales/sales.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { SalesComponent } from './home/sales/sales.component';
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,5 +1,7 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Stock } from '../models/Stock.model';
 
 @Injectable({
@@ -7,38 +9,68 @@ import { Stock } from '../models/Stock.model';
 })
 export class StockService {
 
-  constructor() { }
+  constructor(
+    private http: HttpClient
+  ) { }
 
-  change = new Subject<void>();
+  private allItems: Stock[] = [];
 
-  private allStocks: Stock[] = [
-  ];
-
-  public GetAllStocks() : Stock[]
+  public GetAllStocks() : Observable<Stock[]>
   {
-    return this.allStocks;
-  }
-
-  public AddStock(ProductId:number, Quantity:number, Price:number, Date:Date) {
-    var max = 0;
-    this.allStocks.forEach(c => {
-      max = c.Id > max ? c.Id : max;
-    });
-    var newStock = new Stock(
-      max+1,
-      ProductId,
-      Quantity,
-      Price,
-      Date
+    return this.http.get<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }[], message: string, success: string }>(
+      'https://localhost:5001/stocks'
+    ).pipe(
+      map((res) => {
+        if(!res.success) throw new Error(res.message);
+        this.allItems = [];
+        for(var r of res.data) {
+          this.allItems.unshift(
+            new Stock(r.id, r.productId, r.quantity, r.price, r.date)
+          );
+        }
+        return this.allItems;
+      }),
+      catchError(err => {
+        throw new Error("Data fetching error from the api");
+      }),
     );
-    this.allStocks = [...this.allStocks, newStock];
-    this.change.next(); //emitted to inform change!
-    return newStock;
   }
 
-  public DeleteStockById(Id: number) : void
-  {
-    this.allStocks = this.allStocks.filter(c => c.Id !== Id);
-    this.change.next();
+  public AddStock( productId:number, quantity:number, price:number, date:Date ) : Observable<Stock> {
+
+    return this.http.post<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message: string, success: boolean }>(
+      'https://localhost:5001/stocks',
+      new Stock(0, productId, quantity, price, date)
+    ).pipe(
+      map(res => {
+        if(!res.success) throw new Error(res.message);
+        let item = new Stock(res.data.id, res.data.productId, res.data.quantity, res.data.price, res.data.date)
+        this.allItems.unshift(item);
+        return item;
+      }),
+      catchError(err => {
+        throw new Error(err);
+      })
+    );
   }
+
+  public DeleteStockById(Id: number) : Observable<Stock>
+  {
+    return this.http.delete<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message:string, success:boolean }>(
+      `https://localhost:5001/stocks/${Id}`,
+      {
+        params: new HttpParams().set("Id", Id),
+      }
+    ).pipe(
+      map(res => {
+        if(!res.success) throw new Error(res.message);
+        let item = new Stock(res.data.id, res.data.productId, res.data.quantity, res.data.price, res.data.date)
+        return item;
+      }),
+      catchError(err => {
+        throw new Error(err);
+      })
+    );
+  }
+
 }
