@@ -94,6 +94,7 @@ export class SalesComponent implements OnInit {
         }, error => console.log(error),
       );
       this.editScreen = false;
+      this.saleForm.reset();
       return;
     }
 

@@ -88,6 +88,7 @@ export class CustomersComponent implements OnInit {
         }, error => console.log(error),
       );
       this.editScreen = false;
+      this.customerForm.reset();
       return;
     }
 

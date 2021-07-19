@@ -77,6 +77,7 @@ export class StocksComponent implements OnInit {
         }, error => console.log(error),
       );
       this.editScreen = false;
+      this.stockForm.reset();
       return;
     }
 

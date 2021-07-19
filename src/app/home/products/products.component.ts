@@ -108,6 +108,7 @@ export class ProductsComponent implements OnInit {
         }, error => console.log(error),
       );
       this.editScreen = false;
+      this.productForm.reset();
       return;
     }
 
