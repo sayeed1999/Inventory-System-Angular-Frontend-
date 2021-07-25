@@ -2,13 +2,13 @@
   
     <form fxLayout="column" [formGroup]="customerForm" (ngSubmit)="onFormSubmit()">
       <mat-form-field>
-        <input matInput name="Name" formControlName="Name" placeholder="Name">
+        <input matInput name="name" formControlName="name" placeholder="name">
       </mat-form-field>
       <mat-form-field>
-        <input matInput name="Address" formControlName="Address" placeholder="Address">
+        <input matInput name="ddress" formControlName="address" placeholder="address">
       </mat-form-field>
       <mat-form-field>
-        <input type="number" matInput name="Contact" formControlName="Contact" placeholder="Contact">
+        <input type="number" matInput name="contact" formControlName="contact" placeholder="contact">
       </mat-form-field>
       <div style="display: flex;">
         <div style="flex-grow: 1;"></div>
@@ -33,22 +33,22 @@
   
       <ng-container matColumnDef="Id">
         <th mat-header-cell *matHeaderCellDef> Id </th>
-        <td mat-cell *matCellDef="let element"> {{element.Id}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
       </ng-container>
     
       <ng-container matColumnDef="Name">
         <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.Name}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
       </ng-container>
       
       <ng-container matColumnDef="Address">
         <th mat-header-cell *matHeaderCellDef> Address </th>
-        <td mat-cell *matCellDef="let element"> {{element.Address}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.address}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Contact">
         <th mat-header-cell *matHeaderCellDef> Contact </th>
-        <td mat-cell *matCellDef="let element"> {{element.Contact}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.contact}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Edit">
@@ -63,7 +63,7 @@
       <ng-container matColumnDef="Remove">
         <th mat-header-cell *matHeaderCellDef> Remove </th>
         <td mat-cell *matCellDef="let element">
-          <button mat-icon-button (click)="deleteClicked( element.Id )">
+          <button mat-icon-button (click)="deleteClicked( element.id )">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

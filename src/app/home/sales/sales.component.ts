@@ -27,10 +27,10 @@ export class SalesComponent implements OnInit {
   editId: number = 0;
 
   saleForm : FormGroup = new FormGroup({
-    ProductId: new FormControl(0, [Validators.required]),
-    Quantity: new FormControl(0, [Validators.required]),
-    CustomerId: new FormControl(0, [Validators.required]),
-    Date: new FormControl('', [Validators.required]),
+    productId: new FormControl(0, [Validators.required]),
+    quantity: new FormControl(0, [Validators.required]),
+    customerId: new FormControl(0, [Validators.required]),
+    date: new FormControl('', [Validators.required]),
   });
 
   constructor(
@@ -59,9 +59,9 @@ export class SalesComponent implements OnInit {
   }
 
 
-  deleteClicked(Id: number)
+  deleteClicked(id: number)
   {
-    this.saleService.DeleteSaleById(Id).subscribe(
+    this.saleService.DeleteSaleById(id).subscribe(
       (res: Sale) => { //deleted one returned!
         this.fetchAll();
         this.updateDataSource();
@@ -73,10 +73,10 @@ export class SalesComponent implements OnInit {
   editClicked(index: number)
   {
     this.editScreen = true;
-    this.editId = this.dataSourceCopy[index].Id;
-    this.saleForm.controls.ProductId.setValue(this.dataSourceCopy[index].ProductId);
-    this.saleForm.controls.Quantity.setValue(this.dataSourceCopy[index].Quantity);
-    this.saleForm.controls.CustomerId.setValue(this.dataSourceCopy[index].CustomerId);
+    this.editId = this.dataSourceCopy[index].id;
+    this.saleForm.controls.ProductId.setValue(this.dataSourceCopy[index].productId);
+    this.saleForm.controls.Quantity.setValue(this.dataSourceCopy[index].quantity);
+    this.saleForm.controls.CustomerId.setValue(this.dataSourceCopy[index].customerId);
     this.isModal = true;
   }
 
@@ -87,7 +87,7 @@ export class SalesComponent implements OnInit {
 
     if(this.editScreen) 
     {
-      var sale = new Sale(this.editId, this.saleForm.value.ProductId, this.saleForm.value.Quantity, this.saleForm.value.CustomerId, this.saleForm.value.Date);
+      var sale = new Sale(this.editId, this.saleForm.value.productId, this.saleForm.value.quantity, this.saleForm.value.customerId, this.saleForm.value.date);
       this.saleService.UpdateSale(sale).subscribe(
         (res: Sale) => {
           this.fetchAll();
@@ -98,7 +98,7 @@ export class SalesComponent implements OnInit {
       return;
     }
 
-    this.saleService.AddSale(this.saleForm.value.ProductId, this.saleForm.value.Quantity, this.saleForm.value.CustomerId, this.saleForm.value.Date)
+    this.saleService.AddSale(this.saleForm.value.productId, this.saleForm.value.quantity, this.saleForm.value.customerId, this.saleForm.value.date)
         .subscribe(
             (res: Sale) => {
               // added one..

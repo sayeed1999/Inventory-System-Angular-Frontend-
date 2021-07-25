@@ -20,10 +20,10 @@ export class StocksComponent implements OnInit {
   editId: number = 0;
   
   stockForm : FormGroup = new FormGroup({
-    ProductId: new FormControl('', [Validators.required]),
-    Quantity: new FormControl(0, [Validators.required]),
-    Price: new FormControl(0, [Validators.required]),
-    Date: new FormControl('', [Validators.required]),
+    productId: new FormControl('', [Validators.required]),
+    quantity: new FormControl(0, [Validators.required]),
+    price: new FormControl(0, [Validators.required]),
+    date: new FormControl('', [Validators.required]),
   });
 
   constructor(
@@ -43,9 +43,9 @@ export class StocksComponent implements OnInit {
     this.fetchAll();
   }
 
-  deleteClicked(Id: number)
+  deleteClicked(id: number)
   {
-    this.stockService.DeleteStockById( Id ).subscribe(res => {
+    this.stockService.DeleteStockById( id ).subscribe(res => {
       this.fetchAll();
     }, error => {
       console.log(error);
@@ -55,11 +55,11 @@ export class StocksComponent implements OnInit {
   editClicked(index: number)
   {
     this.editScreen = true;
-    this.editId = this.dataSourceCopy[index].Id;
-    this.stockForm.controls.ProductId.setValue(this.dataSourceCopy[index].ProductId);
-    this.stockForm.controls.Quantity.setValue(this.dataSourceCopy[index].Quantity);
-    this.stockForm.controls.Price.setValue(this.dataSourceCopy[index].Price);
-    this.stockForm.controls.Date.setValue(this.dataSourceCopy[index].Date);
+    this.editId = this.dataSourceCopy[index].id;
+    this.stockForm.controls.ProductId.setValue(this.dataSourceCopy[index].productId);
+    this.stockForm.controls.Quantity.setValue(this.dataSourceCopy[index].quantity);
+    this.stockForm.controls.Price.setValue(this.dataSourceCopy[index].price);
+    this.stockForm.controls.Date.setValue(this.dataSourceCopy[index].date);
     this.isModal = true;
   }
 
@@ -70,7 +70,7 @@ export class StocksComponent implements OnInit {
 
     if(this.editScreen) 
     {
-      var stock = new Stock(this.editId, this.stockForm.value.ProductId, this.stockForm.value.Quantity, this.stockForm.value.Price, this.stockForm.value.Date);
+      var stock = new Stock(this.editId, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date);
       this.stockService.UpdateStock(stock).subscribe(
         (res: Stock) => {
           this.fetchAll();
@@ -81,7 +81,7 @@ export class StocksComponent implements OnInit {
       return;
     }
 
-    this.stockService.AddStock(this.stockForm.value.ProductId, this.stockForm.value.Quantity, this.stockForm.value.Price, this.stockForm.value.Date)
+    this.stockService.AddStock(this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date)
       .subscribe(
         res => {
           this.fetchAll(); //success

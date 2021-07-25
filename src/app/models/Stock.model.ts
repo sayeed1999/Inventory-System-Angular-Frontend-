@@ -1,9 +1,9 @@
 export class Stock {
     constructor(
-        public Id: number,
-        public ProductId: number,
-        public Quantity: number,
-        public Price: number,
-        public Date: Date,
+        public id: number,
+        public productId: number,
+        public quantity: number,
+        public price: number,
+        public date: Date,
     ) {}
 }

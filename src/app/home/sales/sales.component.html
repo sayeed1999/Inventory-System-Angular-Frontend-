@@ -2,16 +2,16 @@
   
     <form fxLayout="column" [formGroup]="saleForm" (ngSubmit)="onFormSubmit()">
       <mat-form-field>
-        <input type="number" matInput name="ProductId" formControlName="ProductId" placeholder="ProductId">
+        <input type="number" matInput name="productId" formControlName="productId" placeholder="productId">
       </mat-form-field>
       <mat-form-field>
-        <input type="number" matInput name="Quantity" formControlName="Quantity" placeholder="Quantity">
+        <input type="number" matInput name="quantity" formControlName="quantity" placeholder="quantity">
       </mat-form-field>
       <mat-form-field>
-        <input type="number" matInput name="CustomerId" formControlName="CustomerId" placeholder="CustomerId">
+        <input type="number" matInput name="customerId" formControlName="customerId" placeholder="customerId">
       </mat-form-field>
       <mat-form-field>
-        <input type="date" matInput name="Date" formControlName="Date" placeholder="Date">
+        <input type="date" matInput name="date" formControlName="date" placeholder="date">
       </mat-form-field>
       <div style="display: flex;">
         <div style="flex-grow: 1;"></div>
@@ -33,27 +33,27 @@
   
       <ng-container matColumnDef="Id">
         <th mat-header-cell *matHeaderCellDef> Id </th>
-        <td mat-cell *matCellDef="let element"> {{element.Id}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
       </ng-container>
     
       <ng-container matColumnDef="Product">
         <th mat-header-cell *matHeaderCellDef> Product Id </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Product?.Name }} </td>
+        <td mat-cell *matCellDef="let element"> {{ element.Product?.name }} </td>
       </ng-container>
       
       <ng-container matColumnDef="Quantity">
         <th mat-header-cell *matHeaderCellDef> Quantity </th>
-        <td mat-cell *matCellDef="let element"> {{element.Quantity}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Customer">
         <th mat-header-cell *matHeaderCellDef> Customer Id </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Customer?.Name }} </td>
+        <td mat-cell *matCellDef="let element"> {{ element.Customer?.name }} </td>
       </ng-container>
 
       <ng-container matColumnDef="Date">
         <th mat-header-cell *matHeaderCellDef> Date </th>
-        <td mat-cell *matCellDef="let element"> {{element.Date}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.date}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Edit">
@@ -68,7 +68,7 @@
       <ng-container matColumnDef="Remove">
         <th mat-header-cell *matHeaderCellDef> Remove </th>
         <td mat-cell *matCellDef="let element">
-          <button mat-icon-button (click)="deleteClicked( element.Id )">
+          <button mat-icon-button (click)="deleteClicked( element.id )">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

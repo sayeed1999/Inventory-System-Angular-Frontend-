@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Stock } from '../models/Stock.model';
 
@@ -22,12 +22,7 @@ export class StockService {
     ).pipe(
       map((res) => {
         if(!res.success) throw new Error(res.message);
-        this.allItems = [];
-        for(var r of res.data) {
-          this.allItems.unshift(
-            new Stock(r.id, r.productId, r.quantity, r.price, r.date)
-          );
-        }
+        this.allItems = res.data;
         return this.allItems;
       }),
       catchError(err => {
@@ -44,9 +39,8 @@ export class StockService {
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let item = new Stock(res.data.id, res.data.productId, res.data.quantity, res.data.price, res.data.date)
-        this.allItems.unshift(item);
-        return item;
+        this.allItems.unshift(res.data);
+        return res.data;
       }),
       catchError(err => {
         throw new Error(err);
@@ -54,18 +48,17 @@ export class StockService {
     );
   }
 
-  public DeleteStockById(Id: number) : Observable<Stock>
+  public DeleteStockById(id: number) : Observable<Stock>
   {
     return this.http.delete<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message:string, success:boolean }>(
-      `https://localhost:5001/stocks/${Id}`,
+      `https://localhost:5001/stocks/${id}`,
       {
-        params: new HttpParams().set("Id", Id),
+        params: new HttpParams().set("Id", id),
       }
     ).pipe(
       map(res => {
-        if(!res.success) throw new Error(res.message);
-        let item = new Stock(res.data.id, res.data.productId, res.data.quantity, res.data.price, res.data.date)
-        return item;
+        if(!res.success) throw new Error(res.message)
+        return res.data;
       }),
       catchError(err => {
         throw new Error(err);
@@ -76,21 +69,19 @@ export class StockService {
   public UpdateStock(stock: Stock) : Observable<Stock>
   {
     return this.http.put<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message:string, success:boolean }>(
-      `https://localhost:5001/stocks/${stock.Id}`, //url
+      `https://localhost:5001/stocks/${stock.id}`, //url
       stock, //body
       { //params
-        params: new HttpParams().set("Id", stock.Id),
+        params: new HttpParams().set("Id", stock.id),
       }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let stock = new Stock(res.data.id, res.data.productId, res.data.quantity, res.data.price, res.data.date);
-        return stock;
+        return res.data;
       }),
       catchError(err => {
         throw new Error(err);
       })
     );
   }
-
 }

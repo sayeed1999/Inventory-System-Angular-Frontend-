@@ -20,9 +20,9 @@ export class CustomersComponent implements OnInit {
   editId: number = 0;
 
   customerForm : FormGroup = new FormGroup({
-    Name: new FormControl('', [Validators.required]),
-    Address: new FormControl('', [Validators.required]),
-    Contact: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
+    address: new FormControl('', [Validators.required]),
+    contact: new FormControl('', [Validators.required]),
   });
 
   constructor(
@@ -33,12 +33,10 @@ export class CustomersComponent implements OnInit {
     this.customerService.GetAllCustomers().subscribe(
       (res: Customer[]) => {
         this.dataSource = res;
-        // console.log(this.dataSource); okay
         this.updateDataSource();
       },
       error => {
         console.log(error);
-        // console.log(44444444444444444);
       }
     );
   }
@@ -49,7 +47,7 @@ export class CustomersComponent implements OnInit {
 
   searching() {
     this.updateDataSource();
-    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
+    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
   }
 
   deleteClicked(Id: number)
@@ -67,10 +65,10 @@ export class CustomersComponent implements OnInit {
   editClicked(index: number)
   {
     this.editScreen = true;
-    this.editId = this.dataSourceCopy[index].Id;
-    this.customerForm.controls.Name.setValue(this.dataSourceCopy[index].Name);
-    this.customerForm.controls.Address.setValue(this.dataSourceCopy[index].Address);
-    this.customerForm.controls.Contact.setValue(this.dataSourceCopy[index].Contact);
+    this.editId = this.dataSourceCopy[index].id;
+    this.customerForm.controls.Name.setValue(this.dataSourceCopy[index].name);
+    this.customerForm.controls.Address.setValue(this.dataSourceCopy[index].address);
+    this.customerForm.controls.Contact.setValue(this.dataSourceCopy[index].contact);
     this.isModal = true;
   }
 
@@ -81,7 +79,7 @@ export class CustomersComponent implements OnInit {
 
     if(this.editScreen) 
     {
-      var customer = new Customer(this.editId, this.customerForm.value.Name, this.customerForm.value.Address, this.customerForm.value.Contact);
+      var customer = new Customer(this.editId, this.customerForm.value.name, this.customerForm.value.address, this.customerForm.value.contact);
       this.customerService.UpdateCustomer(customer).subscribe(
         (res: Customer) => {
           this.fetchAll();
@@ -92,7 +90,7 @@ export class CustomersComponent implements OnInit {
       return;
     }
 
-    this.customerService.AddCustomer(this.customerForm.value.Name, this.customerForm.value.Address, this.customerForm.value.Contact).subscribe(
+    this.customerService.AddCustomer(this.customerForm.value.name, this.customerForm.value.address, this.customerForm.value.contact).subscribe(
       res => {
         this.fetchAll();
       }

@@ -20,8 +20,8 @@ export class CategoriesComponent implements OnInit {
   editId: number = 0;
   
   categoryForm : FormGroup = new FormGroup({
-    Name: new FormControl('', [Validators.required]),
-    Description: new FormControl('', []),
+    name: new FormControl('', [Validators.required]),
+    description: new FormControl('', []),
   });
 
   constructor(
@@ -47,7 +47,7 @@ export class CategoriesComponent implements OnInit {
 
   searching() {
     this.updateDataSource();
-    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
+    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
   }
 
   deleteClicked(Id: number)
@@ -66,9 +66,9 @@ export class CategoriesComponent implements OnInit {
   editClicked(index: number)
   {
     this.editScreen = true;
-    this.editId = this.dataSourceCopy[index].Id;
-    this.categoryForm.controls.Name.setValue(this.dataSourceCopy[index].Name);
-    this.categoryForm.controls.Description.setValue(this.dataSourceCopy[index].Description);
+    this.editId = this.dataSourceCopy[index].id;
+    this.categoryForm.controls.Name.setValue(this.dataSourceCopy[index].name);
+    this.categoryForm.controls.Description.setValue(this.dataSourceCopy[index].description);
     this.isModal = true;
   }
 
@@ -80,7 +80,7 @@ export class CategoriesComponent implements OnInit {
 
     if(this.editScreen) 
     {
-      var category = new Category(this.editId, this.categoryForm.value.Name, this.categoryForm.value.Description);
+      var category = new Category(this.editId, this.categoryForm.value.name, this.categoryForm.value.description);
       this.categoryService.UpdateCategory(category).subscribe(
         (res: Category) => {
           this.fetchAll();
@@ -91,9 +91,8 @@ export class CategoriesComponent implements OnInit {
       return;
     }
 
-    this.categoryService.AddCategory(this.categoryForm.value.Name, this.categoryForm.value.Description).subscribe(
-      (res: Category) => {
-        // success
+    this.categoryService.AddCategory(this.categoryForm.value.name, this.categoryForm.value.description).subscribe(
+      (res: Category) => { // success
         this.fetchAll();
       },
       error => {

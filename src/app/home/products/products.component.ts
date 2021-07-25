@@ -25,9 +25,9 @@ export class ProductsComponent implements OnInit {
   editId: number = 0;
 
   productForm : FormGroup = new FormGroup({
-    Name: new FormControl('', [Validators.required]),
-    Price: new FormControl(0, [Validators.required]),
-    CategoryId: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
+    price: new FormControl(0, [Validators.required]),
+    categoryId: new FormControl('', [Validators.required]),
   });
 
   constructor(
@@ -65,18 +65,18 @@ export class ProductsComponent implements OnInit {
 
   searching() {
     this.updateDataSource();
-    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.Name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
+    this.dataSourceCopy = this.dataSourceCopy.filter(c => c.name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
   }
 
   searchingByCategory() {
     this.searchKeyword = '';
     this.updateDataSource();
-    if(this.searchByCategoryId > 0) this.dataSourceCopy = this.dataSourceCopy.filter(p => p.CategoryId === this.searchByCategoryId);
+    if(this.searchByCategoryId > 0) this.dataSourceCopy = this.dataSourceCopy.filter(p => p.categoryId === this.searchByCategoryId);
   }
 
   deleteClicked(index: number)
   {
-    this.productService.DeleteProductById( this.dataSource[index].Id ).subscribe(
+    this.productService.DeleteProductById( this.dataSource[index].id ).subscribe(
       res => {
         this.fetchAllProducts();
       }, error => console.log(error),
@@ -87,10 +87,10 @@ export class ProductsComponent implements OnInit {
   editClicked(index: number)
   {
     this.editScreen = true;
-    this.editId = this.dataSourceCopy[index].Id;
-    this.productForm.controls.Name.setValue(this.dataSourceCopy[index].Name);
-    this.productForm.controls.Price.setValue(this.dataSourceCopy[index].Price);
-    this.productForm.controls.CategoryId.setValue(this.dataSourceCopy[index].CategoryId);
+    this.editId = this.dataSourceCopy[index].id;
+    this.productForm.controls.Name.setValue(this.dataSourceCopy[index].name);
+    this.productForm.controls.Price.setValue(this.dataSourceCopy[index].price);
+    this.productForm.controls.CategoryId.setValue(this.dataSourceCopy[index].categoryId);
     this.isModal = true;
   }
 
@@ -101,7 +101,7 @@ export class ProductsComponent implements OnInit {
 
     if(this.editScreen) 
     {
-      var product = new Product(this.editId, this.productForm.value.Name, this.productForm.value.Price, this.productForm.value.CategoryId);
+      var product = new Product(this.editId, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId);
       this.productService.UpdateProduct(product).subscribe(
         (res: Product) => {
           this.fetchAllProducts();
@@ -109,12 +109,10 @@ export class ProductsComponent implements OnInit {
       );
       this.editScreen = false;
       this.productForm.reset();
-      return;
     }
 
-    this.productService.AddProduct(this.productForm.value.Name, this.productForm.value.Price, this.productForm.value.CategoryId).subscribe(
-      res => {
-        //success
+    this.productService.AddProduct(this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId).subscribe(
+      res => { //success
         this.fetchAllProducts();
       },
       error => {

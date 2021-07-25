@@ -22,12 +22,13 @@ export class CustomerService {
     ).pipe(
       map((res) => {
         if(!res.success) throw new Error(res.message);
-        this.allItems = [];
-        for(var r of res.data) {
-          this.allItems.unshift(
-            new Customer(r.id, r.name, r.address, r.contact)
-          );
-        }
+        // this.allItems = [];
+        // for(var r of res.data) {
+        //   this.allItems.unshift(
+        //     new Customer(r.id, r.name, r.address, r.contact)
+        //   );
+        // } // eto kisu korsilam!
+        this.allItems = res.data;
         return this.allItems;
       }),
       catchError(err => {
@@ -36,17 +37,17 @@ export class CustomerService {
     );
   }
 
-  public GetCustomerById(Id: number) : Observable<Customer>
+  public GetCustomerById(id: number) : Observable<Customer>
   {
     return this.http.get<{ data: { id:number, name:string, address:string, contact:number }, message: string, success: string }>(
-      `https://localhost:5001/customers/${Id}`,
+      `https://localhost:5001/customers/${id}`,
       {
-        params: new HttpParams().set('Id', Id),
+        params: new HttpParams().set('Id', id),
       }
     ).pipe(
       map((res) => {
         if(!res.success) throw new Error(res.message);
-        var item = new Customer(res.data.id, res.data.name, res.data.address, res.data.contact);
+        var item = res.data;
         return item;
       }),
       catchError(err => {
@@ -63,7 +64,7 @@ export class CustomerService {
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let item = new Customer(res.data.id, res.data.name, res.data.address, res.data.contact)
+        let item = res.data;
         this.allItems.unshift(item);
         return item;
       }),
@@ -73,18 +74,17 @@ export class CustomerService {
     );
   }
 
-  public DeleteCustomerById(Id: number) : Observable<Customer>
+  public DeleteCustomerById(id: number) : Observable<Customer>
   {
     return this.http.delete<{ data: { id:number, name:string, address:string, contact:number }, message:string, success:boolean }>(
-      `https://localhost:5001/customers/${Id}`,
+      `https://localhost:5001/customers/${id}`,
       {
-        params: new HttpParams().set("Id", Id),
+        params: new HttpParams().set("Id", id),
       }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let item = new Customer(res.data.id, res.data.name, res.data.address, res.data.contact)
-        return item;
+        return res.data;
       }),
       catchError(err => {
         throw new Error(err);
@@ -95,21 +95,19 @@ export class CustomerService {
   public UpdateCustomer(customer: Customer) : Observable<Customer>
   {
     return this.http.put<{ data: { id:number, name:string, address:string, contact:number }, message:string, success:boolean }>(
-      `https://localhost:5001/customers/${customer.Id}`, //url
+      `https://localhost:5001/customers/${customer.id}`, //url
       customer, //body
       { //params
-        params: new HttpParams().set("Id", customer.Id),
+        params: new HttpParams().set("Id", customer.id),
       }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let category = new Customer(res.data.id, res.data.name, res.data.address, res.data.contact);
-        return category;
+        return res.data;
       }),
       catchError(err => {
         throw new Error(err);
       })
     );
-  }
-  
+  }  
 }

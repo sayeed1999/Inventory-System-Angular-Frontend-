@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, ObservedValueOf, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Category } from '../models/Category.model';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -24,12 +24,7 @@ export class CategoryService {
     ).pipe(
       map((res) => {
         if(!res.success) throw new Error(res.message);
-        this.allCategories = [];
-        for(var r of res.data) {
-          this.allCategories.unshift(
-            new Category(r.id, r.name, r.description)
-          );
-        }
+        this.allCategories = res.data;
         return this.allCategories;
       }),
       catchError(err => {
@@ -38,11 +33,11 @@ export class CategoryService {
     );
   }
 
-  public AddCategory(Name: string, Description: string) : Observable<Category> {
+  public AddCategory(name: string, description: string) : Observable<Category> {
     var newCategory = new Category(
-      0, // to be fixed by the Web API
-      Name,
-      Description
+      0, // to be fixed by the Web API, or SQL needs ID = 0/NULL to add a new row
+      name,
+      description
     );
     return this.http.post<{ data: { id:number, name:string, description:string }, message: string, success: boolean }>(
       'https://localhost:5001/categories',
@@ -50,7 +45,7 @@ export class CategoryService {
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let category = new Category(res.data.id, res.data.name, res.data.description);
+        let category = res.data;
         this.allCategories.unshift(category);
         return category;
       }),
@@ -60,17 +55,18 @@ export class CategoryService {
     );
   }
 
-  public DeleteCategoryById(Id: number) : Observable<Category>
+  public DeleteCategoryById(id: number) : Observable<Category>
   {
     return this.http.delete<{ data: { id:number, name:string, description:string }, message:string, success:boolean }>(
-      `https://localhost:5001/categories/${Id}`,
+      `https://localhost:5001/categories/${id}`,
       {
-        params: new HttpParams().set("Id", Id),
+        params: new HttpParams().set("Id", id),
       }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let category = new Category(res.data.id, res.data.name, res.data.description);
+        // let category = new Category(res.data.id, res.data.name, res.data.description); memories! egulao korsilam!
+        let category = res.data;
         return category;
       }),
       catchError(err => {
@@ -82,15 +78,15 @@ export class CategoryService {
   public UpdateCategory(category: Category) : Observable<Category>
   {
     return this.http.put<{ data: { id:number, name:string, description:string }, message:string, success:boolean }>(
-      `https://localhost:5001/categories/${category.Id}`, //url
+      `https://localhost:5001/categories/${category.id}`, //url
       category, //body
       { //params
-        params: new HttpParams().set("Id", category.Id),
+        params: new HttpParams().set("Id", category.id),
       }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
-        let category = new Category(res.data.id, res.data.name, res.data.description);
+        let category = res.data;
         return category;
       }),
       catchError(err => {
