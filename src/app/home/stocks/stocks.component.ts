@@ -31,10 +31,10 @@ export class StocksComponent implements OnInit {
   ) { }
 
   fetchAll() {
-    this.stockService.GetAllStocks().subscribe(
+    this.stockService.GetAll().subscribe(
       (res: Stock[]) => {//success
         this.dataSource = res;
-        this.dataSourceCopy = [ ...this.dataSource ];
+        this.updateDataSource();
       }, error => console.log(error),
     );
   }
@@ -45,7 +45,7 @@ export class StocksComponent implements OnInit {
 
   deleteClicked(id: number)
   {
-    this.stockService.DeleteStockById( id ).subscribe(res => {
+    this.stockService.DeleteById( id ).subscribe(res => {
       this.fetchAll();
     }, error => {
       console.log(error);
@@ -71,7 +71,7 @@ export class StocksComponent implements OnInit {
     if(this.editScreen) 
     {
       var stock = new Stock(this.editId, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date);
-      this.stockService.UpdateStock(stock).subscribe(
+      this.stockService.Update(stock).subscribe(
         (res: Stock) => {
           this.fetchAll();
         }, error => console.log(error),
@@ -81,8 +81,9 @@ export class StocksComponent implements OnInit {
       return;
     }
 
-    this.stockService.AddStock(this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date)
-      .subscribe(
+    this.stockService.Add(
+      new Stock(0, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date)
+    ).subscribe(
         res => {
           this.fetchAll(); //success
         }, error => {

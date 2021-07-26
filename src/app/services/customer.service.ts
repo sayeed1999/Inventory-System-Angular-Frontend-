@@ -3,108 +3,20 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Customer } from '../models/Customer.model';
+import { RepositoryService } from './repository.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CustomerService {
+export class CustomerService extends RepositoryService {
 
   constructor(
-    private http: HttpClient
-  ) { }
+    http: HttpClient
+  ) {
+    super(http);
 
-  private allItems: Customer[] = [];
-
-  public GetAllCustomers() : Observable<Customer[]>
-  {
-    return this.http.get<{ data: any[], message: string, success: string }>(
-      'https://localhost:5001/customers'
-    ).pipe(
-      map((res) => {
-        if(!res.success) throw new Error(res.message);
-        // this.allItems = [];
-        // for(var r of res.data) {
-        //   this.allItems.unshift(
-        //     new Customer(r.id, r.name, r.address, r.contact)
-        //   );
-        // } // eto kisu korsilam!
-        this.allItems = res.data;
-        return this.allItems;
-      }),
-      catchError(err => {
-        throw new Error("Data fetching error from the api");
-      }),
-    );
+    this.endpoint = 'customers';
+    this.url += this.endpoint;
   }
 
-  public GetCustomerById(id: number) : Observable<Customer>
-  {
-    return this.http.get<{ data: any, message: string, success: string }>(
-      `https://localhost:5001/customers/${id}`,
-      {
-        params: new HttpParams().set('Id', id),
-      }
-    ).pipe(
-      map((res) => {
-        if(!res.success) throw new Error(res.message);
-        var item = res.data;
-        return item;
-      }),
-      catchError(err => {
-        throw new Error("Data fetching error from the api");
-      }),
-    );
-  }
-
-  public AddCustomer( name:string, address:string, contact:number ) : Observable<Customer> {
-
-    return this.http.post<{ data: any, message: string, success: boolean }>(
-      'https://localhost:5001/customers',
-      new Customer(0, name, address, contact)
-    ).pipe(
-      map(res => {
-        if(!res.success) throw new Error(res.message);
-        let item = res.data;
-        this.allItems.unshift(item);
-        return item;
-      }),
-      catchError(err => {
-        throw new Error(err);
-      })
-    );
-  }
-
-  public DeleteCustomerById(id: number) : Observable<Customer>
-  {
-    return this.http.delete<{ data: any, message:string, success:boolean }>(
-      `https://localhost:5001/customers/${id}`,
-      {
-        params: new HttpParams().set("Id", id),
-      }
-    ).pipe(
-      map(res => {
-        if(!res.success) throw new Error(res.message);
-        return res.data;
-      }),
-      catchError(err => {
-        throw new Error(err);
-      })
-    );
-  }
-
-  public UpdateCustomer(customer: Customer) : Observable<Customer>
-  {
-    return this.http.put<{ data: any, message:string, success:boolean }>(
-      `https://localhost:5001/customers`, //url
-      customer, //body
-    ).pipe(
-      map(res => {
-        if(!res.success) throw new Error(res.message);
-        return res.data;
-      }),
-      catchError(err => {
-        throw new Error(err);
-      })
-    );
-  }  
 }

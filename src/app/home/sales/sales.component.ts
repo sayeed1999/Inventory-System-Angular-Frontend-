@@ -34,16 +34,14 @@ export class SalesComponent implements OnInit {
   });
 
   constructor(
-    private saleService: SalesService,
-    public customerService: CustomerService,
-    public productService: ProductService
+    private saleService: SalesService
   ) { }
 
   allCustomers: Customer[] = [];
   allProducts: Product[] = [];
 
   fetchAll() {
-    this.saleService.GetAllSales().subscribe(
+    this.saleService.GetAll().subscribe(
       (res: Sale[]) => {
         this.dataSource = res;
         this.updateDataSource();
@@ -61,7 +59,7 @@ export class SalesComponent implements OnInit {
 
   deleteClicked(id: number)
   {
-    this.saleService.DeleteSaleById(id).subscribe(
+    this.saleService.DeleteById(id).subscribe(
       (res: Sale) => { //deleted one returned!
         this.fetchAll();
         this.updateDataSource();
@@ -88,7 +86,7 @@ export class SalesComponent implements OnInit {
     if(this.editScreen) 
     {
       var sale = new Sale(this.editId, this.saleForm.value.productId, this.saleForm.value.quantity, this.saleForm.value.customerId, this.saleForm.value.date);
-      this.saleService.UpdateSale(sale).subscribe(
+      this.saleService.Update(sale).subscribe(
         (res: Sale) => {
           this.fetchAll();
         }, error => console.log(error),
@@ -98,13 +96,13 @@ export class SalesComponent implements OnInit {
       return;
     }
 
-    this.saleService.AddSale(this.saleForm.value.productId, this.saleForm.value.quantity, this.saleForm.value.customerId, this.saleForm.value.date)
-        .subscribe(
-            (res: Sale) => {
-              // added one..
-              this.fetchAll();
-              this.updateDataSource();
-            },
+    this.saleService.Add(
+      new Sale(0, this.saleForm.value.productId, this.saleForm.value.quantity, this.saleForm.value.customerId, this.saleForm.value.date)
+    ).subscribe(
+        (res: Sale) => {
+            this.fetchAll();
+            this.updateDataSource();
+        },
             error => console.log(error),
         );
     this.saleForm.reset();

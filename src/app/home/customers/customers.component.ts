@@ -30,7 +30,7 @@ export class CustomersComponent implements OnInit {
   ) { }
 
   fetchAll() {
-    this.customerService.GetAllCustomers().subscribe(
+    this.customerService.GetAll().subscribe(
       (res: Customer[]) => {
         this.dataSource = res;
         this.updateDataSource();
@@ -52,7 +52,7 @@ export class CustomersComponent implements OnInit {
 
   deleteClicked(Id: number)
   {
-    this.customerService.DeleteCustomerById( Id ).subscribe(
+    this.customerService.DeleteById( Id ).subscribe(
       (res: Customer) => {
         this.fetchAll();
       },
@@ -80,7 +80,7 @@ export class CustomersComponent implements OnInit {
     if(this.editScreen) 
     {
       var customer = new Customer(this.editId, this.customerForm.value.name, this.customerForm.value.address, this.customerForm.value.contact);
-      this.customerService.UpdateCustomer(customer).subscribe(
+      this.customerService.Update(customer).subscribe(
         (res: Customer) => {
           this.fetchAll();
         }, error => console.log(error),
@@ -90,7 +90,9 @@ export class CustomersComponent implements OnInit {
       return;
     }
 
-    this.customerService.AddCustomer(this.customerForm.value.name, this.customerForm.value.address, this.customerForm.value.contact).subscribe(
+    this.customerService.Add(
+      new Customer(0, this.customerForm.value.name, this.customerForm.value.address, this.customerForm.value.contact)
+    ).subscribe(
       res => {
         this.fetchAll();
       }

@@ -29,12 +29,12 @@ export class CategoriesComponent implements OnInit {
   ) { }
 
   fetchAll() {
-    this.categoryService.GetAllCategories().subscribe(
+    this.categoryService.GetAll().subscribe(
       (res: Category[]) => {
         this.dataSource = res;
         this.updateDataSource();
       },
-      error => {
+      (error: Error) => {
         console.log(error.message);
       }
     );
@@ -44,7 +44,6 @@ export class CategoriesComponent implements OnInit {
     this.fetchAll();
   }
 
-
   searching() {
     this.updateDataSource();
     this.dataSourceCopy = this.dataSourceCopy.filter(c => c.name.toLowerCase().indexOf(this.searchKeyword.toLowerCase()) != -1 );
@@ -52,9 +51,8 @@ export class CategoriesComponent implements OnInit {
 
   deleteClicked(Id: number)
   {
-    this.categoryService.DeleteCategoryById( Id ).subscribe(
-      (res: Category) => {
-        // success
+    this.categoryService.DeleteById( Id ).subscribe(
+      (res: Category) => { // success
         this.fetchAll();
       },
       error => {
@@ -78,10 +76,10 @@ export class CategoriesComponent implements OnInit {
   onFormSubmit() {
     this.isModal = false;
 
+    let category = new Category(this.editId, this.categoryForm.value.name, this.categoryForm.value.description);
     if(this.editScreen) 
     {
-      var category = new Category(this.editId, this.categoryForm.value.name, this.categoryForm.value.description);
-      this.categoryService.UpdateCategory(category).subscribe(
+      this.categoryService.Update(category).subscribe(
         (res: Category) => {
           this.fetchAll();
         }, error => console.log(error),
@@ -90,8 +88,8 @@ export class CategoriesComponent implements OnInit {
       this.categoryForm.reset();
       return;
     }
-
-    this.categoryService.AddCategory(this.categoryForm.value.name, this.categoryForm.value.description).subscribe(
+    category.id = 0; // don't mess with id
+    this.categoryService.Add(category).subscribe(
       (res: Category) => { // success
         this.fetchAll();
       },

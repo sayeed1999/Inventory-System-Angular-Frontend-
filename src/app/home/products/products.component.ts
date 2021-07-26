@@ -36,7 +36,7 @@ export class ProductsComponent implements OnInit {
   ) { }
 
   fetchAllCategories() {
-    this.categoryService.GetAllCategories().subscribe(
+    this.categoryService.GetAll().subscribe(
       (res: Category[]) => {
         this.allCategories = res;
       },
@@ -47,7 +47,7 @@ export class ProductsComponent implements OnInit {
   }
 
   fetchAllProducts() {
-    this.productService.GetAllProducts().subscribe(
+    this.productService.GetAll().subscribe(
       (res: Product[]) => {
         this.dataSource = res;
         this.dataSourceCopy = this.dataSource;
@@ -76,7 +76,7 @@ export class ProductsComponent implements OnInit {
 
   deleteClicked(index: number)
   {
-    this.productService.DeleteProductById( this.dataSource[index].id ).subscribe(
+    this.productService.DeleteById( this.dataSource[index].id ).subscribe(
       res => {
         this.fetchAllProducts();
       }, error => console.log(error),
@@ -102,7 +102,7 @@ export class ProductsComponent implements OnInit {
     if(this.editScreen) 
     {
       var product = new Product(this.editId, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId);
-      this.productService.UpdateProduct(product).subscribe(
+      this.productService.Update(product).subscribe(
         (res: Product) => {
           this.fetchAllProducts();
         }, error => console.log(error),
@@ -111,7 +111,9 @@ export class ProductsComponent implements OnInit {
       this.productForm.reset();
     }
 
-    this.productService.AddProduct(this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId).subscribe(
+    this.productService.Add(
+      new Product(0, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId)
+    ).subscribe(
       res => { //success
         this.fetchAllProducts();
       },
