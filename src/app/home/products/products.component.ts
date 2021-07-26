@@ -12,7 +12,7 @@ import { ProductService } from 'src/app/services/product.service';
 })
 export class ProductsComponent implements OnInit {
 
-  displayedColumns: string[] = ['Id', 'Name', 'Price', 'CategoryId', 'Edit', 'Remove'];
+  displayedColumns: string[] = ['Id', 'Name', 'Price', 'Category', 'AvailableQuantity', 'Edit', 'Remove'];
   dataSource: Product[] = [];
   dataSourceCopy: Product[] = [];
   allCategories: Category[] = [];
@@ -28,6 +28,7 @@ export class ProductsComponent implements OnInit {
     name: new FormControl('', [Validators.required]),
     price: new FormControl(0, [Validators.required]),
     categoryId: new FormControl('', [Validators.required]),
+    availableQuantity: new FormControl(0, [Validators.required]),
   });
 
   constructor(
@@ -91,6 +92,7 @@ export class ProductsComponent implements OnInit {
     this.productForm.controls.name.setValue(this.dataSourceCopy[index].name);
     this.productForm.controls.price.setValue(this.dataSourceCopy[index].price);
     this.productForm.controls.categoryId.setValue(this.dataSourceCopy[index].categoryId);
+    this.productForm.controls.availableQuantity.setValue(this.dataSourceCopy[index].availableQuantity);
     this.isModal = true;
   }
 
@@ -101,7 +103,7 @@ export class ProductsComponent implements OnInit {
 
     if(this.editScreen) 
     {
-      var product = new Product(this.editId, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId);
+      var product = new Product(this.editId, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId, this.productForm.value.availableQuantity);
       this.productService.Update(product).subscribe(
         (res: Product) => {
           this.fetchAllProducts();
@@ -112,7 +114,7 @@ export class ProductsComponent implements OnInit {
     }
 
     this.productService.Add(
-      new Product(0, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId)
+      new Product(0, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId, this.productForm.value.availableQuantity)
     ).subscribe(
       res => { //success
         this.fetchAllProducts();

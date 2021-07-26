@@ -25,6 +25,7 @@ export class RepositoryService {
       this.url
     ).pipe(
       map(res => {
+        console.log(res);
         this.all = res.data;
         return this.all;
       }),
