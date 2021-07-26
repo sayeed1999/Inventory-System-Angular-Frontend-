@@ -88,9 +88,9 @@ export class ProductsComponent implements OnInit {
   {
     this.editScreen = true;
     this.editId = this.dataSourceCopy[index].id;
-    this.productForm.controls.Name.setValue(this.dataSourceCopy[index].name);
-    this.productForm.controls.Price.setValue(this.dataSourceCopy[index].price);
-    this.productForm.controls.CategoryId.setValue(this.dataSourceCopy[index].categoryId);
+    this.productForm.controls.name.setValue(this.dataSourceCopy[index].name);
+    this.productForm.controls.price.setValue(this.dataSourceCopy[index].price);
+    this.productForm.controls.categoryId.setValue(this.dataSourceCopy[index].categoryId);
     this.isModal = true;
   }
 

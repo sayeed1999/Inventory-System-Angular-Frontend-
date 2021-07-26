@@ -74,9 +74,9 @@ export class SalesComponent implements OnInit {
   {
     this.editScreen = true;
     this.editId = this.dataSourceCopy[index].id;
-    this.saleForm.controls.ProductId.setValue(this.dataSourceCopy[index].productId);
-    this.saleForm.controls.Quantity.setValue(this.dataSourceCopy[index].quantity);
-    this.saleForm.controls.CustomerId.setValue(this.dataSourceCopy[index].customerId);
+    this.saleForm.controls.productId.setValue(this.dataSourceCopy[index].productId);
+    this.saleForm.controls.quantity.setValue(this.dataSourceCopy[index].quantity);
+    this.saleForm.controls.customerId.setValue(this.dataSourceCopy[index].customerId);
     this.isModal = true;
   }
 

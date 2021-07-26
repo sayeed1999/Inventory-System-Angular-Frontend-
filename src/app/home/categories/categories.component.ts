@@ -67,8 +67,8 @@ export class CategoriesComponent implements OnInit {
   {
     this.editScreen = true;
     this.editId = this.dataSourceCopy[index].id;
-    this.categoryForm.controls.Name.setValue(this.dataSourceCopy[index].name);
-    this.categoryForm.controls.Description.setValue(this.dataSourceCopy[index].description);
+    this.categoryForm.controls.name.setValue(this.dataSourceCopy[index].name);
+    this.categoryForm.controls.description.setValue(this.dataSourceCopy[index].description);
     this.isModal = true;
   }
 

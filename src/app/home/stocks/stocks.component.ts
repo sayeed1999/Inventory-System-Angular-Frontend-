@@ -56,10 +56,10 @@ export class StocksComponent implements OnInit {
   {
     this.editScreen = true;
     this.editId = this.dataSourceCopy[index].id;
-    this.stockForm.controls.ProductId.setValue(this.dataSourceCopy[index].productId);
-    this.stockForm.controls.Quantity.setValue(this.dataSourceCopy[index].quantity);
-    this.stockForm.controls.Price.setValue(this.dataSourceCopy[index].price);
-    this.stockForm.controls.Date.setValue(this.dataSourceCopy[index].date);
+    this.stockForm.controls.productId.setValue(this.dataSourceCopy[index].productId);
+    this.stockForm.controls.quantity.setValue(this.dataSourceCopy[index].quantity);
+    this.stockForm.controls.price.setValue(this.dataSourceCopy[index].price);
+    this.stockForm.controls.date.setValue(this.dataSourceCopy[index].date);
     this.isModal = true;
   }
 

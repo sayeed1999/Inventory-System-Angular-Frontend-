@@ -19,10 +19,12 @@ export class CategoryService {
 
   public GetAllCategories() : Observable<Category[]>
   {
-    return this.http.get<{ data: { id:number, name:string, description:string }[], message: string, success: string }>(
+    // return this.http.get<{ data: { id:number, name:string, description:string }[], message: string, success: string }>(
+    return this.http.get<{ data: any[], message: string, success: string }>( 
       'https://localhost:5001/categories'
     ).pipe(
       map((res) => {
+        console.log(res);
         if(!res.success) throw new Error(res.message);
         this.allCategories = res.data;
         return this.allCategories;
@@ -39,7 +41,7 @@ export class CategoryService {
       name,
       description
     );
-    return this.http.post<{ data: { id:number, name:string, description:string }, message: string, success: boolean }>(
+    return this.http.post<{ data: any, message: string, success: boolean }>(
       'https://localhost:5001/categories',
       newCategory
     ).pipe(
@@ -57,7 +59,7 @@ export class CategoryService {
 
   public DeleteCategoryById(id: number) : Observable<Category>
   {
-    return this.http.delete<{ data: { id:number, name:string, description:string }, message:string, success:boolean }>(
+    return this.http.delete<{ data: any, message:string, success:boolean }>(
       `https://localhost:5001/categories/${id}`,
       {
         params: new HttpParams().set("Id", id),
@@ -77,12 +79,12 @@ export class CategoryService {
 
   public UpdateCategory(category: Category) : Observable<Category>
   {
-    return this.http.put<{ data: { id:number, name:string, description:string }, message:string, success:boolean }>(
-      `https://localhost:5001/categories/${category.id}`, //url
+    return this.http.put<{ data: any, message:string, success:boolean }>(
+      `https://localhost:5001/categories`, //url ${category.id}
       category, //body
-      { //params
-        params: new HttpParams().set("Id", category.id),
-      }
+      // { //params
+      //   params: new HttpParams().set("Id", category.id),
+      // }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);
@@ -94,5 +96,4 @@ export class CategoryService {
       })
     );
   }
-
 }

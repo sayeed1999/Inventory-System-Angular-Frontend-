@@ -19,7 +19,7 @@ export class SalesService {
 
   public GetAllSales() : Observable<Sale[]>
   {
-    return this.http.get<{ data: { id:number, productId:number, quantity:number, customerId:number, date:Date, product:{ id:number, name:string, price:number, categoryId:number }, customer:{ id:number, name:string, address:string, contact:number } }[], message: string, success: string }>(
+    return this.http.get<{ data: any[], message: string, success: string }>(
       'https://localhost:5001/sales'
     ).pipe(
       map((res) => {
@@ -35,7 +35,7 @@ export class SalesService {
 
   public AddSale( productId:number, quantity:number, customerId:number, date:Date ) : Observable<Sale> {
 
-    return this.http.post<{ data: { id:number, productId:number, quantity:number, customerId:number, date:Date }, message: string, success: boolean }>(
+    return this.http.post<{ data: any, message: string, success: boolean }>(
       'https://localhost:5001/sales',
       new Sale(0, productId, quantity, customerId, date)
     ).pipe(
@@ -51,7 +51,7 @@ export class SalesService {
 
   public DeleteSaleById(id: number) : Observable<Sale>
   {
-    return this.http.delete<{ data: { id:number, productId:number, quantity:number, customerId:number, date:Date }, message:string, success:boolean }>(
+    return this.http.delete<{ data: any, message:string, success:boolean }>(
       `https://localhost:5001/sales/${id}`,
       {
         params: new HttpParams().set("Id", id),
@@ -69,12 +69,9 @@ export class SalesService {
 
   public UpdateSale(sale: Sale) : Observable<Sale>
   {
-    return this.http.put<{ data: { id:number, productId:number, quantity:number, customerId:number, date:Date }, message:string, success:boolean }>(
-      `https://localhost:5001/sales/${sale.id}`, //url
+    return this.http.put<{ data: any, message:string, success:boolean }>(
+      `https://localhost:5001/sales/`, //url
       sale, //body
-      { //params
-        params: new HttpParams().set("Id", sale.id),
-      }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);

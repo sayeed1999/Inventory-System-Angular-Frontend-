@@ -1,3 +1,5 @@
+import { Product } from "./Product.model";
+
 export class Stock {
     constructor(
         public id: number,
@@ -5,5 +7,6 @@ export class Stock {
         public quantity: number,
         public price: number,
         public date: Date,
+        public product?: Product
     ) {}
 }

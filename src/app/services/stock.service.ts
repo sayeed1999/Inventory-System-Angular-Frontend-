@@ -17,7 +17,7 @@ export class StockService {
 
   public GetAllStocks() : Observable<Stock[]>
   {
-    return this.http.get<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }[], message: string, success: string }>(
+    return this.http.get<{ data: any[], message: string, success: string }>(
       'https://localhost:5001/stocks'
     ).pipe(
       map((res) => {
@@ -33,7 +33,7 @@ export class StockService {
 
   public AddStock( productId:number, quantity:number, price:number, date:Date ) : Observable<Stock> {
 
-    return this.http.post<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message: string, success: boolean }>(
+    return this.http.post<{ data: any, message: string, success: boolean }>(
       'https://localhost:5001/stocks',
       new Stock(0, productId, quantity, price, date)
     ).pipe(
@@ -50,7 +50,7 @@ export class StockService {
 
   public DeleteStockById(id: number) : Observable<Stock>
   {
-    return this.http.delete<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message:string, success:boolean }>(
+    return this.http.delete<{ data: any, message:string, success:boolean }>(
       `https://localhost:5001/stocks/${id}`,
       {
         params: new HttpParams().set("Id", id),
@@ -68,12 +68,9 @@ export class StockService {
 
   public UpdateStock(stock: Stock) : Observable<Stock>
   {
-    return this.http.put<{ data: { id:number, productId:number, quantity:number, price:number, date:Date }, message:string, success:boolean }>(
-      `https://localhost:5001/stocks/${stock.id}`, //url
+    return this.http.put<{ data: any, message:string, success:boolean }>(
+      `https://localhost:5001/stocks`, //url
       stock, //body
-      { //params
-        params: new HttpParams().set("Id", stock.id),
-      }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);

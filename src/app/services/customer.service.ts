@@ -17,7 +17,7 @@ export class CustomerService {
 
   public GetAllCustomers() : Observable<Customer[]>
   {
-    return this.http.get<{ data: { id:number, name:string, address:string, contact:number }[], message: string, success: string }>(
+    return this.http.get<{ data: any[], message: string, success: string }>(
       'https://localhost:5001/customers'
     ).pipe(
       map((res) => {
@@ -39,7 +39,7 @@ export class CustomerService {
 
   public GetCustomerById(id: number) : Observable<Customer>
   {
-    return this.http.get<{ data: { id:number, name:string, address:string, contact:number }, message: string, success: string }>(
+    return this.http.get<{ data: any, message: string, success: string }>(
       `https://localhost:5001/customers/${id}`,
       {
         params: new HttpParams().set('Id', id),
@@ -58,7 +58,7 @@ export class CustomerService {
 
   public AddCustomer( name:string, address:string, contact:number ) : Observable<Customer> {
 
-    return this.http.post<{ data: { id:number, name:string, address:string, contact:number }, message: string, success: boolean }>(
+    return this.http.post<{ data: any, message: string, success: boolean }>(
       'https://localhost:5001/customers',
       new Customer(0, name, address, contact)
     ).pipe(
@@ -76,7 +76,7 @@ export class CustomerService {
 
   public DeleteCustomerById(id: number) : Observable<Customer>
   {
-    return this.http.delete<{ data: { id:number, name:string, address:string, contact:number }, message:string, success:boolean }>(
+    return this.http.delete<{ data: any, message:string, success:boolean }>(
       `https://localhost:5001/customers/${id}`,
       {
         params: new HttpParams().set("Id", id),
@@ -94,12 +94,9 @@ export class CustomerService {
 
   public UpdateCustomer(customer: Customer) : Observable<Customer>
   {
-    return this.http.put<{ data: { id:number, name:string, address:string, contact:number }, message:string, success:boolean }>(
-      `https://localhost:5001/customers/${customer.id}`, //url
+    return this.http.put<{ data: any, message:string, success:boolean }>(
+      `https://localhost:5001/customers`, //url
       customer, //body
-      { //params
-        params: new HttpParams().set("Id", customer.id),
-      }
     ).pipe(
       map(res => {
         if(!res.success) throw new Error(res.message);

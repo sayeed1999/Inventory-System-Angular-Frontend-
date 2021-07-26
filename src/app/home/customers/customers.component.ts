@@ -66,9 +66,9 @@ export class CustomersComponent implements OnInit {
   {
     this.editScreen = true;
     this.editId = this.dataSourceCopy[index].id;
-    this.customerForm.controls.Name.setValue(this.dataSourceCopy[index].name);
-    this.customerForm.controls.Address.setValue(this.dataSourceCopy[index].address);
-    this.customerForm.controls.Contact.setValue(this.dataSourceCopy[index].contact);
+    this.customerForm.controls.name.setValue(this.dataSourceCopy[index].name);
+    this.customerForm.controls.address.setValue(this.dataSourceCopy[index].address);
+    this.customerForm.controls.contact.setValue(this.dataSourceCopy[index].contact);
     this.isModal = true;
   }
 
