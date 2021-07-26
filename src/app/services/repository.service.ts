@@ -53,7 +53,7 @@ export class RepositoryService {
 
   public Update(item: any) : Observable<any>
   {
-    return this.http.put<{ data: any, message:string, success:boolean }>(
+    return this.http.put<ServiceResponse>(
       this.url, //url
       item //body
     ).pipe(
@@ -69,7 +69,7 @@ export class RepositoryService {
 
   public DeleteById(id: number) : Observable<any>
   {
-    return this.http.delete<{ data: any, message:string, success:boolean }>(
+    return this.http.delete<ServiceResponse>(
       `${this.url}/${id}`,
       {
         params: new HttpParams().set("Id", id),
