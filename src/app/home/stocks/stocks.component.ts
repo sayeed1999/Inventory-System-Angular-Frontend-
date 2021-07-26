@@ -10,7 +10,7 @@ import { StockService } from 'src/app/services/stock.service';
 })
 export class StocksComponent implements OnInit {
 
-  displayedColumns: string[] = ['Id', 'ProductId', 'Quantity', 'Price', 'Date', 'Edit', 'Remove'];
+  displayedColumns: string[] = ['Id', 'ProductId', 'Quantity', 'Price', 'Edit', 'Remove'];
   dataSource: Stock[] = [];
   dataSourceCopy: Stock[] = [];
 
@@ -23,7 +23,6 @@ export class StocksComponent implements OnInit {
     productId: new FormControl('', [Validators.required]),
     quantity: new FormControl(0, [Validators.required]),
     price: new FormControl(0, [Validators.required]),
-    date: new FormControl('', [Validators.required]),
   });
 
   constructor(
@@ -59,7 +58,6 @@ export class StocksComponent implements OnInit {
     this.stockForm.controls.productId.setValue(this.dataSourceCopy[index].productId);
     this.stockForm.controls.quantity.setValue(this.dataSourceCopy[index].quantity);
     this.stockForm.controls.price.setValue(this.dataSourceCopy[index].price);
-    this.stockForm.controls.date.setValue(this.dataSourceCopy[index].date);
     this.isModal = true;
   }
 
@@ -70,7 +68,7 @@ export class StocksComponent implements OnInit {
 
     if(this.editScreen) 
     {
-      var stock = new Stock(this.editId, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date);
+      var stock = new Stock(this.editId, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price);
       this.stockService.Update(stock).subscribe(
         (res: Stock) => {
           this.fetchAll();
@@ -82,7 +80,7 @@ export class StocksComponent implements OnInit {
     }
 
     this.stockService.Add(
-      new Stock(0, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date)
+      new Stock(0, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price)
     ).subscribe(
         res => {
           this.fetchAll(); //success

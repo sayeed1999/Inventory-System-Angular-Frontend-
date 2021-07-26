@@ -20,11 +20,11 @@
   </shared-dialog>
   
   <margin-top></margin-top>
-  
-  <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px">
-    <h2 style="font-weight: 400;">Customer Table</h2>
-    <gorgeous-button style="margin-left: auto;" (click)="isModal = true" >New Customer</gorgeous-button>
-    <mat-form-field>
+
+  <h2 style="font-weight: 400;">Customer Table</h2>
+  <div style="display: flex; flex-wrap: wrap; margin-bottom: 10px;">
+    <gorgeous-button (click)="isModal = true" >New Customer</gorgeous-button>
+    <mat-form-field style="margin-left: auto;">
       <input matInput [(ngModel)]="searchKeyword" (ngModelChange)="searching()" name="search" placeholder="Search Customer">
     </mat-form-field>
   </div>

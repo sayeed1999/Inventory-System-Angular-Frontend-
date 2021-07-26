@@ -10,9 +10,6 @@
       <mat-form-field>
         <input type="number" matInput name="price" formControlName="price" placeholder="price">
       </mat-form-field>
-      <mat-form-field>
-        <input type="date" matInput name="date" formControlName="date" placeholder="date">
-      </mat-form-field>
       <div style="display: flex;">
         <div style="flex-grow: 1;"></div>
         <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
@@ -24,9 +21,9 @@
   
   <margin-top></margin-top>
   
-  <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px">
-    <h2 style="font-weight: 400;">Stock Table</h2>
-    <gorgeous-button style="margin-left: auto;" (click)="isModal = true" >New Stock</gorgeous-button>
+  <h2 style="font-weight: 400;">Stock Table</h2>
+  <div style="display: flex; flex-wrap: wrap; margin-bottom: 10px;">
+    <gorgeous-button (click)="isModal = true" >New Stock</gorgeous-button>
   </div>
   
   <table mat-table [dataSource]="dataSourceCopy" class="mat-elevation-z8">
@@ -49,11 +46,6 @@
       <ng-container matColumnDef="Price">
         <th mat-header-cell *matHeaderCellDef> Price </th>
         <td mat-cell *matCellDef="let element"> {{element.price}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="Date">
-        <th mat-header-cell *matHeaderCellDef> Date </th>
-        <td mat-cell *matCellDef="let element"> {{element.date}} </td>
       </ng-container>
 
       <ng-container matColumnDef="Edit">
