@@ -5,7 +5,6 @@ export class Stock {
         public id: number,
         public productId: number,
         public quantity: number,
-        public price: number,
         public product?: Product
     ) {}
 }
