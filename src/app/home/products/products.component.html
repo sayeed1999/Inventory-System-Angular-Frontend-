@@ -3,22 +3,24 @@
     <form fxLayout="column" [formGroup]="productForm" (ngSubmit)="onFormSubmit()">
       
       <mat-form-field>
-        <input matInput name="name" formControlName="name" placeholder="name">
+        <input matInput name="name" formControlName="name" placeholder="Name" required>
+        <mat-error *ngIf="productForm.controls?.name?.errors?.required"> Name is required. </mat-error>
       </mat-form-field>
       
       <mat-form-field>
-        <input type="number" matInput name="price" formControlName="price" placeholder="price">
+        <input type="number" matInput name="price" formControlName="price" placeholder="Price" required>
+        <mat-error *ngIf="productForm.controls?.price?.errors?.min?.min"> Price of item should be minimum {{ productForm.controls?.price?.errors?.min?.min }}. </mat-error>
       </mat-form-field>
       
-      <mat-form-field appearance="fill">
-        <mat-label>Select</mat-label>
+      <mat-form-field>
+        <mat-label>Select * </mat-label>
         <mat-select formControlName="categoryId">
           <mat-option *ngFor="let option of allCategories" [value]="option.id"> {{ option.name }} </mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field>
-        <input type="number" matInput name="availableQuantity" formControlName="availableQuantity" placeholder="available quantity">
+        <input type="number" matInput name="availableQuantity" formControlName="availableQuantity" placeholder="Available Quantity">
       </mat-form-field>
       
       <div style="display: flex;">

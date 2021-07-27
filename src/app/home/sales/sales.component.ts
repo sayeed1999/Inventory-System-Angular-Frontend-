@@ -1,14 +1,15 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { Customer } from 'src/app/models/Customer.model';
 import { Product } from 'src/app/models/Product.model';
 import { Sale } from 'src/app/models/Sale.model';
+import { CustomerService } from 'src/app/services/customer.service';
+import { ProductService } from 'src/app/services/product.service';
 import { SalesService } from 'src/app/services/sales.service';
 
-export class Model {
-
-}
 
 @Component({
   selector: 'sales',
@@ -26,24 +27,58 @@ export class SalesComponent implements OnInit {
   editId: number = 0;
 
   saleForm : FormGroup = new FormGroup({
-    productId: new FormControl(0, [Validators.required]),
-    quantity: new FormControl(0, [Validators.required]),
-    customerId: new FormControl(0, [Validators.required]),
+    productId: new FormControl(0, [Validators.required, Validators.min(1)]),
+    quantity: new FormControl(0, [Validators.required, Validators.min(0.01)]),
+    customerId: new FormControl(0, [Validators.required, Validators.min(1)]),
     date: new FormControl('', [Validators.required]),
   });
-
-  constructor(
-    private saleService: SalesService,
-    private  snackBar: MatSnackBar
-  ) { }
 
   allCustomers: Customer[] = [];
   allProducts: Product[] = [];
 
+  filteredProducts!: Observable<any[]>;
+  filteredCustomers!: Observable<any[]>;
+
+  productSearchControl = new FormControl('');
+  customerSearchControl = new FormControl('');
+
+
+  constructor(
+    private saleService: SalesService,
+    private productService: ProductService,
+    private customerService: CustomerService,
+    private  snackBar: MatSnackBar
+  ) { }
+
+  ngOnInit(): void {
+    this.fetchAll();
+
+    this.productService.GetAll().subscribe(
+      res => this.allProducts = res.data,
+      error => this.openSnackBar(error.error.message),
+    );
+    this.customerService.GetAll().subscribe(
+      res => this.allCustomers = res.data,
+      error => this.openSnackBar(error.error.message),
+    );
+    
+    this.filteredCustomers = this.customerSearchControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterCustomers(value))
+      );
+
+    this.filteredProducts = this.productSearchControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterProducts(value))
+      );
+  }
+
   fetchAll() {
     this.saleService.GetAll().subscribe(
-      (res: Sale[]) => {
-        this.dataSource = res;
+      res => {
+        this.dataSource = res.data;
         this.updateDataSource();
       },
       error => {
@@ -52,15 +87,10 @@ export class SalesComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {
-    this.fetchAll();
-  }
-
-
   deleteClicked(id: number)
   {
     this.saleService.DeleteById(id).subscribe(
-      (res: Sale) => { //deleted one returned!
+      res => { //deleted one returned!
         this.fetchAll();
         this.updateDataSource();
       },
@@ -87,7 +117,7 @@ export class SalesComponent implements OnInit {
     {
       var sale = new Sale(this.editId, this.saleForm.value.productId, this.saleForm.value.quantity, this.saleForm.value.customerId, this.saleForm.value.date);
       this.saleService.Update(sale).subscribe(
-        (res: Sale) => {
+        res => {
           this.fetchAll();
         }, error => this.openSnackBar(error.error.message),
       );
@@ -99,7 +129,7 @@ export class SalesComponent implements OnInit {
     this.saleService.Add(
       new Sale(0, this.saleForm.value.productId, this.saleForm.value.quantity, this.saleForm.value.customerId, this.saleForm.value.date)
     ).subscribe(
-        (res: Sale) => {
+        res => {
             this.fetchAll();
             this.updateDataSource();
         },
@@ -118,4 +148,30 @@ export class SalesComponent implements OnInit {
       duration: 3000,
     });
   }
+
+  private _filterProducts(value: any): any[] {
+    let index = this.allProducts.findIndex(op => op.name === value); //identical
+    if(index != -1) { //match found
+      this.saleForm.controls.productId.setValue( this.allProducts[index].id );
+      return [ this.allProducts[index] ];
+    }
+    this.saleForm.controls.productId.setValue(0);
+    const filterValue = value.toLowerCase();
+    return this.allProducts.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
+  private _filterCustomers(value: any): any[] {
+    let index = this.allCustomers.findIndex(op => op.name === value); //identical
+    
+    if(index != -1) { //match found
+      this.saleForm.controls.customerId.setValue( this.allCustomers[index].id );
+      return [ this.allCustomers[index] ];
+    }
+    this.saleForm.controls.customerId.setValue(0);
+    const filterValue = value.toLowerCase();
+
+    return this.allCustomers.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
+  
 }

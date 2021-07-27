@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { Product } from 'src/app/models/Product.model';
 import { Stock } from 'src/app/models/Stock.model';
+import { ProductService } from 'src/app/services/product.service';
 import { StockService } from 'src/app/services/stock.service';
 
 @Component({
@@ -21,23 +25,29 @@ export class StocksComponent implements OnInit {
   editId: number = 0;
   
   stockForm : FormGroup = new FormGroup({
-    productId: new FormControl('', [Validators.required]),
-    quantity: new FormControl(0, [Validators.required]),
-    price: new FormControl(0, [Validators.required]),
+    productId: new FormControl('', [Validators.required, Validators.min(1)]),
+    quantity: new FormControl(0, [Validators.required, Validators.min(0.01)]),
+    price: new FormControl(0, [Validators.required, Validators.min(1)]),
     date: new FormControl('', [Validators.required]),
   });
 
+  allProducts: Product[] = [];
+  filteredProducts!: Observable<Product[]>;
+  productSearchControl = new FormControl('');
+
   constructor(
     private stockService: StockService,
+    private productService: ProductService,
     private snackBar: MatSnackBar
   ) { }
 
   fetchAll() {
     this.stockService.GetAll().subscribe(
-      (res: Stock[]) => {//success
-        this.dataSource = res;
+      (res) => { // success
+        this.dataSource = res.data;
         this.updateDataSource();
-      }, error => {
+      }, 
+      error => {
         this.openSnackBar(error.error.message);
       }
     );
@@ -45,6 +55,17 @@ export class StocksComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAll();
+
+    this.productService.GetAll().subscribe(
+      res => this.allProducts = res.data,
+      error => this.openSnackBar(error.error.message)
+    );
+
+    this.filteredProducts = this.productSearchControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterProducts(value))
+      );
   }
 
   deleteClicked(id: number)
@@ -77,7 +98,7 @@ export class StocksComponent implements OnInit {
     {
       var stock = new Stock(this.editId, this.stockForm.value.productId, this.stockForm.value.quantity, this.stockForm.value.price, this.stockForm.value.date);
       this.stockService.Update(stock).subscribe(
-        (res: Stock) => {
+        (res) => {
           this.fetchAll();
         },
         error => {
@@ -111,4 +132,15 @@ export class StocksComponent implements OnInit {
       duration: 3000,
     });
   }
+
+  private _filterProducts(value: string): Product[] {
+    let index = this.allProducts.findIndex(p => p.name === value);
+    if(index != -1) {
+      this.stockForm.controls.productId.setValue( this.allProducts[index].id );
+      return [ this.allProducts[index] ];
+    }
+    this.stockForm.controls.productId.setValue(0);
+    return this.allProducts.filter(product => product.name.toLowerCase().includes( value.toLowerCase() ));
+  }
+
 }

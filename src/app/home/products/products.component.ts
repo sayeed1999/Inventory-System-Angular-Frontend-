@@ -27,9 +27,9 @@ export class ProductsComponent implements OnInit {
 
   productForm : FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    price: new FormControl(0, [Validators.required]),
-    categoryId: new FormControl('', [Validators.required]),
-    availableQuantity: new FormControl(0, [Validators.required]),
+    price: new FormControl(0, [Validators.required, Validators.min(1)]),
+    categoryId: new FormControl('', [Validators.required, Validators.min(1)]),
+    availableQuantity: new FormControl(0),
   });
 
   constructor(
@@ -40,8 +40,8 @@ export class ProductsComponent implements OnInit {
 
   fetchAllCategories() {
     this.categoryService.GetAll().subscribe(
-      (res: Category[]) => {
-        this.allCategories = res;
+      res => {
+        this.allCategories = res.data;
       },
       error => {
         console.log(error.error.message);
@@ -51,8 +51,8 @@ export class ProductsComponent implements OnInit {
 
   fetchAllProducts() {
     this.productService.GetAll().subscribe(
-      (res: Product[]) => {
-        this.dataSource = res;
+      res => {
+        this.dataSource = res.data;
         this.dataSourceCopy = this.dataSource;
       },
       error => {
@@ -107,7 +107,7 @@ export class ProductsComponent implements OnInit {
     {
       var product = new Product(this.editId, this.productForm.value.name, this.productForm.value.price, this.productForm.value.categoryId, this.productForm.value.availableQuantity);
       this.productService.Update(product).subscribe(
-        (res: Product) => {
+        res => {
           this.fetchAllProducts();
         }, error => this.openSnackBar(error.error.message),
       );
@@ -130,6 +130,7 @@ export class ProductsComponent implements OnInit {
   }
 
   isValid() : boolean {
+    // console.log(this.productForm.controls);
     return this.productForm?.status == "VALID";
   }
 
@@ -139,4 +140,5 @@ export class ProductsComponent implements OnInit {
       duration: 3000,
     });
   }
+  
 }

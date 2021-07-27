@@ -1,23 +1,40 @@
 <shared-dialog *ngIf="isModal" (emitter)="isModal = $event" >
   
     <form fxLayout="column" [formGroup]="stockForm" (ngSubmit)="onFormSubmit()">
-      <mat-form-field>
-        <input type="text" matInput name="productId" formControlName="productId" placeholder="productId">
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Product</mat-label>
+        <input type="text"
+               placeholder="Search and Select Product"
+               matInput
+               [formControl]="productSearchControl"
+               [matAutocomplete]="auto"
+               required>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of filteredProducts | async" [value]="option.name">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
+
       <mat-form-field>
         <input type="number" matInput name="quantity" formControlName="quantity" placeholder="quantity">
       </mat-form-field>
+
       <mat-form-field>
         <input type="number" matInput name="price" formControlName="price" placeholder="price">
       </mat-form-field>
+
       <mat-form-field>
         <input type="date" matInput name="date" formControlName="date" placeholder="date">
       </mat-form-field>
+
       <div style="display: flex;">
         <div style="flex-grow: 1;"></div>
         <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
         <button mat-raised-button color="accent" [disabled]="!isValid()" > {{ editScreen ? "Modify" : "Create" }} </button>
       </div>
+
     </form>
   
   </shared-dialog>

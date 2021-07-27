@@ -1,26 +1,56 @@
 <shared-dialog *ngIf="isModal" (emitter)="isModal = $event" >
   
     <form fxLayout="column" [formGroup]="saleForm" (ngSubmit)="onFormSubmit()">
-      <mat-form-field>
-        <input type="number" matInput name="productId" formControlName="productId" placeholder="productId">
+      
+      <mat-form-field class="example-full-width">
+        <mat-label>Product</mat-label>
+        <input type="text"
+               placeholder="Search and Select Product"
+               matInput
+               [formControl]="productSearchControl"
+               [matAutocomplete]="auto"
+               required>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of filteredProducts | async" [value]="option.name">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
+
       <mat-form-field>
-        <input type="number" matInput name="quantity" formControlName="quantity" placeholder="quantity">
+        <mat-label>Quantity</mat-label>
+        <input type="number" matInput name="Quantity" formControlName="quantity" placeholder="Quantity">
       </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Customer</mat-label>
+        <input type="text"
+               placeholder="Search and Select Customer"
+               matInput
+               [formControl]="customerSearchControl"
+               [matAutocomplete]="auto2"
+               required>
+        <mat-autocomplete #auto2="matAutocomplete">
+          <mat-option *ngFor="let option of filteredCustomers | async" [value]="option.name">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
       <mat-form-field>
-        <input type="number" matInput name="customerId" formControlName="customerId" placeholder="customerId">
+        <mat-label>Date</mat-label>
+        <input type="date" matInput name="date" formControlName="date" placeholder="Pick a Date">
       </mat-form-field>
-      <mat-form-field>
-        <input type="date" matInput name="date" formControlName="date" placeholder="date">
-      </mat-form-field>
+
       <div style="display: flex;">
         <div style="flex-grow: 1;"></div>
         <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
         <button mat-raised-button color="accent" [disabled]="!isValid()" > {{ editScreen ? "Modify" : "Create" }} </button>
       </div>
+
     </form>
   
-  </shared-dialog>
+</shared-dialog>
   
   <margin-top></margin-top>
   

@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/models/Category.model';
+import { ServiceResponse } from 'src/app/models/ServiceResponse.model';
 import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
@@ -21,8 +22,8 @@ export class CategoriesComponent implements OnInit {
   editId: number = 0;
   
   categoryForm : FormGroup = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    description: new FormControl('', []),
+    name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    description: new FormControl(''),
   });
 
   constructor(
@@ -32,8 +33,8 @@ export class CategoriesComponent implements OnInit {
 
   fetchAll() {
     this.categoryService.GetAll().subscribe(
-      (res: Category[]) => {
-        this.dataSource = res;
+      (res: ServiceResponse) => {
+        this.dataSource = res.data;
         this.updateDataSource();
       },
       error => {
@@ -54,7 +55,7 @@ export class CategoriesComponent implements OnInit {
   deleteClicked(Id: number)
   {
     this.categoryService.DeleteById( Id ).subscribe(
-      (res: Category) => { // success
+      (res: ServiceResponse) => { // success
         this.fetchAll();
       },
       error => {
@@ -76,13 +77,14 @@ export class CategoriesComponent implements OnInit {
 
   // Add/Update Category
   onFormSubmit() {
+    // console.log(this.categoryForm) why not show perfect data :(
     this.isModal = false;
 
     let category = new Category(this.editId, this.categoryForm.value.name, this.categoryForm.value.description);
     if(this.editScreen) 
     {
       this.categoryService.Update(category).subscribe(
-        (res: Category) => {
+        (res: ServiceResponse) => {
           this.fetchAll();
         }, error => this.openSnackBar(error.error.message),
       );
@@ -92,7 +94,7 @@ export class CategoriesComponent implements OnInit {
     }
     category.id = 0; // don't mess with id
     this.categoryService.Add(category).subscribe(
-      (res: Category) => { // success
+      (res: ServiceResponse) => { // success
         this.fetchAll();
       },
       error => {
@@ -103,6 +105,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   isValid() : boolean {
+    // console.log(this.categoryForm) // perfectly shows up!
     return this.categoryForm?.status == "VALID";
   }
 

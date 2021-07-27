@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Customer } from 'src/app/models/Customer.model';
+import { ServiceResponse } from 'src/app/models/ServiceResponse.model';
 import { CustomerService } from 'src/app/services/customer.service';
 
 @Component({
@@ -21,9 +22,9 @@ export class CustomersComponent implements OnInit {
   editId: number = 0;
 
   customerForm : FormGroup = new FormGroup({
-    name: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required, Validators.minLength(3)]),
     address: new FormControl('', [Validators.required]),
-    contact: new FormControl('', [Validators.required]),
+    contact: new FormControl(0, [Validators.required, Validators.min(0.01)]),
   });
 
   constructor(
@@ -33,8 +34,8 @@ export class CustomersComponent implements OnInit {
 
   fetchAll() {
     this.customerService.GetAll().subscribe(
-      (res: Customer[]) => {
-        this.dataSource = res;
+      (res: ServiceResponse) => {
+        this.dataSource = res.data;
         this.updateDataSource();
       },
       error => {
@@ -55,7 +56,7 @@ export class CustomersComponent implements OnInit {
   deleteClicked(Id: number)
   {
     this.customerService.DeleteById( Id ).subscribe(
-      (res: Customer) => {
+      res => {
         this.fetchAll();
       },
       error => {
@@ -83,7 +84,7 @@ export class CustomersComponent implements OnInit {
     {
       var customer = new Customer(this.editId, this.customerForm.value.name, this.customerForm.value.address, this.customerForm.value.contact);
       this.customerService.Update(customer).subscribe(
-        (res: Customer) => {
+        res => {
           this.fetchAll();
         }, error => this.openSnackBar(error.error.message),
       );
@@ -113,4 +114,5 @@ export class CustomersComponent implements OnInit {
       duration: 3000,
     });
   }
+  
 }

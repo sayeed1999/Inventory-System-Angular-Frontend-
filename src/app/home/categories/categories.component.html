@@ -1,7 +1,8 @@
 <shared-dialog *ngIf="isModal" (emitter)="isModal = $event;">
   <form fxLayout="column" [formGroup]="categoryForm" (ngSubmit)="onFormSubmit()">
     <mat-form-field>
-      <input matInput name="name" formControlName="name" placeholder="name">
+      <input matInput name="name" formControlName="name" placeholder="name" required>
+      <mat-error *ngIf="categoryForm.controls?.name?.errors?.minlength"> Length must be minimum {{ categoryForm.controls?.name?.errors?.minlength.requiredLength }} characters </mat-error>
     </mat-form-field>
     <mat-form-field>
       <textarea matInput name="description" formControlName="description" placeholder="description"></textarea>

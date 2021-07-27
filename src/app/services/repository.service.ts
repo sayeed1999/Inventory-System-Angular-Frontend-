@@ -15,77 +15,40 @@ export class RepositoryService {
 
   constructor(
     protected http: HttpClient
-  ) {
-  }
+  ) {}
 
-  // CRUD..
+  // C R U D ..
 
-  public GetAll(): Observable<any[]> {
+  public GetAll(): Observable<ServiceResponse> {
     return this.http.get<ServiceResponse>(
       this.url
-    ).pipe(
-      map(res => {
-        console.log(res);
-        this.all = [];
-        for(let r of res.data) this.all.unshift(r); 
-        return this.all;
-      }),
-      catchError(error => {
-        throw error;
-      })
     );
   }
 
-  public Add(item: any) : Observable<any> {
+  public Add(item: any) : Observable<ServiceResponse> {
     
     return this.http.post<ServiceResponse>(
       this.url,
       item
-    ).pipe(
-      map(res => {
-        if(!res.success) throw new Error(res.message);
-        this.all.unshift(res.data);
-        return res.data;
-      }),
-      catchError(err => {
-        throw err;
-      })
     );
   }
 
-  public Update(item: any) : Observable<any>
+  public Update(item: any) : Observable<ServiceResponse>
   {
     return this.http.put<ServiceResponse>(
       this.url, //url
       item //body
-    ).pipe(
-      map(res => {
-        if(!res.success) throw new Error(res.message);
-        return res.data;
-      }),
-      catchError(err => {
-        throw err;
-      })
     );
   }
 
-  public DeleteById(id: number) : Observable<any>
+  public DeleteById(id: number) : Observable<ServiceResponse>
   {
     return this.http.delete<ServiceResponse>(
       `${this.url}/${id}`,
       {
         params: new HttpParams().set("Id", id),
       }
-    ).pipe(
-      map(res => {
-        if(!res.success) throw new Error(res.message);
-        return res.data;
-      }),
-      catchError(err => {
-        throw err;
-      })
     );
   }
-
-
+  
 }
