@@ -26,11 +26,12 @@ export class RepositoryService {
     ).pipe(
       map(res => {
         console.log(res);
-        this.all = res.data;
+        this.all = [];
+        for(let r of res.data) this.all.unshift(r); 
         return this.all;
       }),
-      catchError((error: Error) => {
-        throw new Error(error.message);
+      catchError(error => {
+        throw error;
       })
     );
   }
@@ -47,7 +48,7 @@ export class RepositoryService {
         return res.data;
       }),
       catchError(err => {
-        throw new Error(err);
+        throw err;
       })
     );
   }
@@ -63,7 +64,7 @@ export class RepositoryService {
         return res.data;
       }),
       catchError(err => {
-        throw new Error(err);
+        throw err;
       })
     );
   }
@@ -81,7 +82,7 @@ export class RepositoryService {
         return res.data;
       }),
       catchError(err => {
-        throw new Error(err);
+        throw err;
       })
     );
   }

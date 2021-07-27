@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Customer } from 'src/app/models/Customer.model';
 import { CustomerService } from 'src/app/services/customer.service';
 
@@ -27,6 +28,7 @@ export class CustomersComponent implements OnInit {
 
   constructor(
     private customerService: CustomerService,
+    private snackBar: MatSnackBar
   ) { }
 
   fetchAll() {
@@ -36,7 +38,7 @@ export class CustomersComponent implements OnInit {
         this.updateDataSource();
       },
       error => {
-        console.log(error);
+        this.openSnackBar(error.error.message);
       }
     );
   }
@@ -57,7 +59,7 @@ export class CustomersComponent implements OnInit {
         this.fetchAll();
       },
       error => {
-        console.log(error);
+        this.openSnackBar(error.error.message);
       }
     );
   }
@@ -83,7 +85,7 @@ export class CustomersComponent implements OnInit {
       this.customerService.Update(customer).subscribe(
         (res: Customer) => {
           this.fetchAll();
-        }, error => console.log(error),
+        }, error => this.openSnackBar(error.error.message),
       );
       this.editScreen = false;
       this.customerForm.reset();
@@ -95,12 +97,20 @@ export class CustomersComponent implements OnInit {
     ).subscribe(
       res => {
         this.fetchAll();
-      }
+      },
+      err => this.openSnackBar(err.error.message)
     );
     this.customerForm.reset();
   }
 
   isValid() : boolean {
     return this.customerForm?.status == "VALID";
+  }
+
+  openSnackBar(message: string) {
+    if(message == undefined) message = "Unknown error has occured. Check your connection please.";
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+    });
   }
 }

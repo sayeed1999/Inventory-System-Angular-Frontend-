@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/models/Category.model';
 import { Product } from 'src/app/models/Product.model';
 import { CategoryService } from 'src/app/services/category.service';
@@ -33,7 +34,8 @@ export class ProductsComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    public categoryService: CategoryService,
+    private categoryService: CategoryService,
+    private snackBar: MatSnackBar
   ) { }
 
   fetchAllCategories() {
@@ -42,7 +44,7 @@ export class ProductsComponent implements OnInit {
         this.allCategories = res;
       },
       error => {
-        console.log(error);
+        console.log(error.error.message);
       }
     );
   }
@@ -54,7 +56,7 @@ export class ProductsComponent implements OnInit {
         this.dataSourceCopy = this.dataSource;
       },
       error => {
-        console.log(error);
+        this.openSnackBar(error.error.message);
       }
     );
   }
@@ -80,7 +82,7 @@ export class ProductsComponent implements OnInit {
     this.productService.DeleteById( this.dataSource[index].id ).subscribe(
       res => {
         this.fetchAllProducts();
-      }, error => console.log(error),
+      }, error => this.openSnackBar(error.error.message),
     );
     this.searchKeyword = ''; this.searchByCategoryId = 0;
   }
@@ -107,7 +109,7 @@ export class ProductsComponent implements OnInit {
       this.productService.Update(product).subscribe(
         (res: Product) => {
           this.fetchAllProducts();
-        }, error => console.log(error),
+        }, error => this.openSnackBar(error.error.message),
       );
       this.editScreen = false;
       this.productForm.reset();
@@ -120,7 +122,7 @@ export class ProductsComponent implements OnInit {
         this.fetchAllProducts();
       },
       error => {
-        console.log(error);
+        this.openSnackBar(error.error.message);
       }
     );
     this.productForm.reset();
@@ -129,5 +131,12 @@ export class ProductsComponent implements OnInit {
 
   isValid() : boolean {
     return this.productForm?.status == "VALID";
+  }
+
+  openSnackBar(message: string) {
+    if(message == undefined) message = "Unknown error has occured. Check your connection please.";
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+    });
   }
 }

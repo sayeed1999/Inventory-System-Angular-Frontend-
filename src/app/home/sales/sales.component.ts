@@ -1,10 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Customer } from 'src/app/models/Customer.model';
 import { Product } from 'src/app/models/Product.model';
 import { Sale } from 'src/app/models/Sale.model';
-import { CustomerService } from 'src/app/services/customer.service';
-import { ProductService } from 'src/app/services/product.service';
 import { SalesService } from 'src/app/services/sales.service';
 
 export class Model {
@@ -34,7 +33,8 @@ export class SalesComponent implements OnInit {
   });
 
   constructor(
-    private saleService: SalesService
+    private saleService: SalesService,
+    private  snackBar: MatSnackBar
   ) { }
 
   allCustomers: Customer[] = [];
@@ -47,7 +47,7 @@ export class SalesComponent implements OnInit {
         this.updateDataSource();
       },
       error => {
-        console.log(error);
+        this.openSnackBar(error.error.message);
       }
     );
   }
@@ -64,7 +64,7 @@ export class SalesComponent implements OnInit {
         this.fetchAll();
         this.updateDataSource();
       },
-      error => console.log(error),
+      error => this.openSnackBar(error.error.message),
     );
   }
 
@@ -89,7 +89,7 @@ export class SalesComponent implements OnInit {
       this.saleService.Update(sale).subscribe(
         (res: Sale) => {
           this.fetchAll();
-        }, error => console.log(error),
+        }, error => this.openSnackBar(error.error.message),
       );
       this.editScreen = false;
       this.saleForm.reset();
@@ -103,12 +103,19 @@ export class SalesComponent implements OnInit {
             this.fetchAll();
             this.updateDataSource();
         },
-            error => console.log(error),
+            error => this.openSnackBar(error.error.message),
         );
     this.saleForm.reset();
   }
 
   isValid() : boolean {
     return this.saleForm?.status == "VALID";
+  }
+
+  openSnackBar(message: string) {
+    if(message == undefined) message = "Unknown error has occured. Check your connection please.";
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+    });
   }
 }

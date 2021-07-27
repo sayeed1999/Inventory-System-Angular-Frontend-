@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Category } from 'src/app/models/Category.model';
 import { CategoryService } from 'src/app/services/category.service';
 
@@ -26,6 +27,7 @@ export class CategoriesComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
+    private snackBar: MatSnackBar
   ) { }
 
   fetchAll() {
@@ -34,8 +36,8 @@ export class CategoriesComponent implements OnInit {
         this.dataSource = res;
         this.updateDataSource();
       },
-      (error: Error) => {
-        console.log(error.message);
+      error => {
+        this.openSnackBar(error.error.message);
       }
     );
   }
@@ -56,7 +58,7 @@ export class CategoriesComponent implements OnInit {
         this.fetchAll();
       },
       error => {
-        console.log(error);
+        this.openSnackBar(error.error.message);
       }
     );
   }
@@ -82,7 +84,7 @@ export class CategoriesComponent implements OnInit {
       this.categoryService.Update(category).subscribe(
         (res: Category) => {
           this.fetchAll();
-        }, error => console.log(error),
+        }, error => this.openSnackBar(error.error.message),
       );
       this.editScreen = false;
       this.categoryForm.reset();
@@ -94,7 +96,7 @@ export class CategoriesComponent implements OnInit {
         this.fetchAll();
       },
       error => {
-        console.log("error occurred while adding to db");
+        this.openSnackBar(error.error.message);
       }
     );
     this.categoryForm.reset();
@@ -102,5 +104,12 @@ export class CategoriesComponent implements OnInit {
 
   isValid() : boolean {
     return this.categoryForm?.status == "VALID";
+  }
+
+  openSnackBar(message: string) {
+    if(message == undefined) message = "Unknown error has occured. Check your connection please.";
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+    });
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Stock } from 'src/app/models/Stock.model';
 import { StockService } from 'src/app/services/stock.service';
 
@@ -28,6 +29,7 @@ export class StocksComponent implements OnInit {
 
   constructor(
     private stockService: StockService,
+    private snackBar: MatSnackBar
   ) { }
 
   fetchAll() {
@@ -35,7 +37,9 @@ export class StocksComponent implements OnInit {
       (res: Stock[]) => {//success
         this.dataSource = res;
         this.updateDataSource();
-      }, error => console.log(error),
+      }, error => {
+        this.openSnackBar(error.error.message);
+      }
     );
   }
 
@@ -48,7 +52,7 @@ export class StocksComponent implements OnInit {
     this.stockService.DeleteById( id ).subscribe(res => {
       this.fetchAll();
     }, error => {
-      console.log(error);
+      this.openSnackBar(error.error.message);
     });
   }
 
@@ -75,7 +79,10 @@ export class StocksComponent implements OnInit {
       this.stockService.Update(stock).subscribe(
         (res: Stock) => {
           this.fetchAll();
-        }, error => console.log(error),
+        },
+        error => {
+          this.openSnackBar(error.error.message);
+        }
       );
       this.editScreen = false;
       this.stockForm.reset();
@@ -88,7 +95,7 @@ export class StocksComponent implements OnInit {
         res => {
           this.fetchAll(); //success
         }, error => {
-          console.log(error);
+          this.openSnackBar(error.error.message);
         }
       );
     this.stockForm.reset();
@@ -96,5 +103,12 @@ export class StocksComponent implements OnInit {
 
   isValid() : boolean {
     return this.stockForm?.status == "VALID";
+  }
+
+  openSnackBar(message: string) {
+    if(message == undefined) message = "Unknown error has occured. Check your connection please.";
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+    });
   }
 }
