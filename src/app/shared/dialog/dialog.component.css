@@ -15,8 +15,6 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80vw;
-    min-height: 30vh;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px gray;

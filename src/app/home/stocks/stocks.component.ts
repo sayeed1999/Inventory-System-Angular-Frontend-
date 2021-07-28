@@ -23,6 +23,7 @@ export class StocksComponent implements OnInit {
   isModal: boolean = false;
   editScreen: boolean = false;
   editId: number = 0;
+  searchByProduct = '';
   
   stockForm : FormGroup = new FormGroup({
     productId: new FormControl('', [Validators.required, Validators.min(1)]),
@@ -53,6 +54,8 @@ export class StocksComponent implements OnInit {
     );
   }
 
+  updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
+
   ngOnInit(): void {
     this.fetchAll();
 
@@ -67,6 +70,13 @@ export class StocksComponent implements OnInit {
         map(value => this._filterProducts(value))
       );
   }
+
+  searchingByProduct() {
+    this.updateDataSource();
+    this.dataSourceCopy = this.dataSourceCopy.filter(sale => sale.product?.name.toLowerCase().includes( this.searchByProduct.toLowerCase() ));
+  }
+
+  // C R U D ..
 
   deleteClicked(id: number)
   {
@@ -85,11 +95,11 @@ export class StocksComponent implements OnInit {
     this.stockForm.controls.quantity.setValue(this.dataSourceCopy[index].quantity);
     this.stockForm.controls.price.setValue(this.dataSourceCopy[index].price);
     this.stockForm.controls.date.setValue(this.dataSourceCopy[index].date);
+
+    this.productSearchControl.setValue( this.dataSourceCopy[index].product?.name );
     
     this.isModal = true;
   }
-
-  updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
   onFormSubmit() {
     this.isModal = false;

@@ -20,6 +20,7 @@ export class ProductsComponent implements OnInit {
 
   searchKeyword: string = '';
   searchByCategoryId: number = 0;
+  sortBy: number = 0; // none/ascending/descending = 0/1/-1
 
   isModal: boolean = false;
   editScreen: boolean = false;
@@ -76,6 +77,19 @@ export class ProductsComponent implements OnInit {
     this.updateDataSource();
     if(this.searchByCategoryId > 0) this.dataSourceCopy = this.dataSourceCopy.filter(p => p.categoryId === this.searchByCategoryId);
   }
+
+  sorting() {
+    this.updateDataSource();
+    if(this.sortBy == 0) return;
+    this.dataSourceCopy = this.dataSourceCopy.sort((a, b) => {
+      if(a.name > b.name) return this.sortBy;
+      if(a.name < b.name) return -this.sortBy;
+      return 0;
+    });
+    this.dataSourceCopy = this.dataSourceCopy.slice();
+  }
+
+  // C R U D ..
 
   deleteClicked(index: number)
   {

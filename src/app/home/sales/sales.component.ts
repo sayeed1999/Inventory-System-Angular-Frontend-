@@ -25,6 +25,8 @@ export class SalesComponent implements OnInit {
   isModal: boolean = false;
   editScreen: boolean = false;
   editId: number = 0;
+  searchByProduct = '';
+  searchByCustomer = '';
 
   saleForm : FormGroup = new FormGroup({
     productId: new FormControl(0, [Validators.required, Validators.min(1)]),
@@ -75,10 +77,21 @@ export class SalesComponent implements OnInit {
       );
   }
 
+  searchingByProduct() {
+    this.updateDataSource();
+    this.dataSourceCopy = this.dataSourceCopy.filter(sale => sale.product?.name.toLowerCase().includes( this.searchByProduct.toLowerCase() ));
+  }
+  searchingByCustomer() {
+    this.updateDataSource();
+    this.dataSourceCopy = this.dataSourceCopy.filter(sale => sale.customer?.name.toLowerCase().includes( this.searchByCustomer.toLowerCase() ));
+  }
+
   fetchAll() {
     this.saleService.GetAll().subscribe(
       res => {
         this.dataSource = res.data;
+        // this.dataSource = [];
+        // for(var i in res.data) this.dataSource.unshift(res.data[i]);
         this.updateDataSource();
       },
       error => {
@@ -105,6 +118,11 @@ export class SalesComponent implements OnInit {
     this.saleForm.controls.productId.setValue(this.dataSourceCopy[index].productId);
     this.saleForm.controls.quantity.setValue(this.dataSourceCopy[index].quantity);
     this.saleForm.controls.customerId.setValue(this.dataSourceCopy[index].customerId);
+    this.saleForm.controls.date.setValue( this.dataSourceCopy[index].date );
+
+    this.productSearchControl.setValue( this.dataSourceCopy[index].product?.name );
+    this.customerSearchControl.setValue( this.dataSourceCopy[index].customer?.name );
+    
     this.isModal = true;
   }
 

@@ -23,8 +23,7 @@
         <input type="number" matInput name="availableQuantity" formControlName="availableQuantity" placeholder="Available Quantity">
       </mat-form-field>
       
-      <div style="display: flex;">
-        <div style="flex-grow: 1"></div>
+      <div>
         <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
         <button mat-raised-button color="accent" [disabled]="!isValid()" > {{ editScreen ? "Modify" : "Create" }} </button>
       </div>
@@ -36,21 +35,30 @@
 <margin-top></margin-top>
   
   <h2 style="font-weight: 400;">Product Table</h2>
-  <div style="display: flex; flex-wrap: wrap; margin-bottom: 10px;">
+  <div style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 10px;">
     <gorgeous-button (click)="isModal = true" >New Product</gorgeous-button>
-    <mat-form-field style="margin-left: auto;">
+
+    <mat-form-field appearance="fill">
+      <mat-label>Sort By:</mat-label>
+      <mat-select [(ngModel)]="sortBy" (ngModelChange)="sorting()">
+        <mat-option [value]="0"> Default </mat-option>
+        <mat-option [value]="1"> Sort By Ascending </mat-option>
+        <mat-option [value]="-1"> Sort By Descending </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Show By Category</mat-label>
+      <mat-select [(ngModel)]="searchByCategoryId" (ngModelChange)="searchingByCategory()">
+        <mat-option value="0"> All </mat-option>
+        <mat-option *ngFor="let option of allCategories" [value]="option.id"> {{ option.name }} </mat-option>
+      </mat-select>
+    </mat-form-field>  
+
+    <mat-form-field>
       <input matInput [(ngModel)]="searchKeyword" (ngModelChange)="searching()" name="search" placeholder="Search Product">
     </mat-form-field>
-  </div>
-
-  <mat-form-field appearance="fill">
-    <mat-label>Show By Category</mat-label>
-    <mat-select [(ngModel)]="searchByCategoryId" (ngModelChange)="searchingByCategory()">
-      <mat-option value="0"> All </mat-option>
-      <mat-option *ngFor="let option of allCategories" [value]="option.id"> {{ option.name }} </mat-option>
-    </mat-select>
-  </mat-form-field>
-  
+  </div>  
 
   <table mat-table [dataSource]="dataSourceCopy" class="mat-elevation-z8">
     

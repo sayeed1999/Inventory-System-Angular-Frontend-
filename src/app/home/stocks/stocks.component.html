@@ -29,8 +29,7 @@
         <input type="date" matInput name="date" formControlName="date" placeholder="date">
       </mat-form-field>
 
-      <div style="display: flex;">
-        <div style="flex-grow: 1;"></div>
+      <div>
         <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
         <button mat-raised-button color="accent" [disabled]="!isValid()" > {{ editScreen ? "Modify" : "Create" }} </button>
       </div>
@@ -42,8 +41,22 @@
   <margin-top></margin-top>
   
   <h2 style="font-weight: 400;">Stock Table</h2>
-  <div style="display: flex; flex-wrap: wrap; margin-bottom: 10px;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 10px;">
     <gorgeous-button (click)="isModal = true" >New Stock</gorgeous-button>
+
+    <mat-form-field>
+      <input matInput placeholder="Search By Product"
+             [(ngModel)]='searchByProduct'
+             (ngModelChange)='searchingByProduct()'
+             [matAutocomplete]="auto3"
+             >
+      <mat-autocomplete #auto3="matAutocomplete">
+        <mat-option *ngFor="let option of dataSourceCopy" [value]="option.product?.name">
+          {{option.product?.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
   </div>
   
   <table mat-table [dataSource]="dataSourceCopy" class="mat-elevation-z8">

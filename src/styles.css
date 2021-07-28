@@ -6,3 +6,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 table {
     width: 100%;
 }
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 288px !important;
+    justify-content: center;
+}
+
+mat-form-field {
+    width: 200px !important;
+    margin: 4px 0;
+}
+
+form > mat-form-field {
+    width: 100% !important;
+}
