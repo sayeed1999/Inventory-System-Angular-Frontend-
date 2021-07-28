@@ -89,9 +89,9 @@ export class SalesComponent implements OnInit {
   fetchAll() {
     this.saleService.GetAll().subscribe(
       res => {
-        this.dataSource = res.data;
-        // this.dataSource = [];
-        // for(var i in res.data) this.dataSource.unshift(res.data[i]);
+        // this.dataSource = res.data;
+        this.dataSource = [];
+        for(let i of res.data) this.dataSource.unshift(i);
         this.updateDataSource();
       },
       error => {

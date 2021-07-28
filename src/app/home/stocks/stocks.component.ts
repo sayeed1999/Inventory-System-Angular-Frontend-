@@ -45,7 +45,9 @@ export class StocksComponent implements OnInit {
   fetchAll() {
     this.stockService.GetAll().subscribe(
       (res) => { // success
-        this.dataSource = res.data;
+        // this.dataSource = res.data;
+        this.dataSource = [];
+        for(let i of res.data) this.dataSource.unshift(i);
         this.updateDataSource();
       }, 
       error => {
