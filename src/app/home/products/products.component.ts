@@ -93,7 +93,7 @@ export class ProductsComponent implements OnInit {
 
   deleteClicked(index: number)
   {
-    this.productService.DeleteById( this.dataSource[index].id ).subscribe(
+    this.productService.DeleteById( this.dataSourceCopy[index].id ).subscribe(
       res => {
         this.fetchAllProducts();
       }, error => this.openSnackBar(error.error.message),
