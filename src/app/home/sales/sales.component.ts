@@ -32,18 +32,14 @@ export class SalesComponent implements OnInit {
     productId: new FormControl(0, [Validators.required, Validators.min(1)]),
     quantity: new FormControl(0, [Validators.required, Validators.min(0.01)]),
     customerId: new FormControl(0, [Validators.required, Validators.min(1)]),
-    date: new FormControl('', [Validators.required]),
+    date: new FormControl(new Date(), [Validators.required]),
   });
 
   allCustomers: Customer[] = [];
   allProducts: Product[] = [];
 
-  filteredProducts!: Observable<any[]>;
-  filteredCustomers!: Observable<any[]>;
-
-  productSearchControl = new FormControl('');
-  customerSearchControl = new FormControl('');
-
+  editProductName = '';
+  editCustomerName = '';
 
   constructor(
     private saleService: SalesService,
@@ -63,18 +59,6 @@ export class SalesComponent implements OnInit {
       res => this.allCustomers = res.data,
       error => this.openSnackBar(error.error.message),
     );
-    
-    this.filteredCustomers = this.customerSearchControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filterCustomers(value))
-      );
-
-    this.filteredProducts = this.productSearchControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filterProducts(value))
-      );
   }
 
   searchingByProduct() {
@@ -111,17 +95,22 @@ export class SalesComponent implements OnInit {
     );
   }
 
-  editClicked(index: number)
+  editClicked(element: Sale)
   {
-    this.editScreen = true;
-    this.editId = this.dataSourceCopy[index].id;
-    this.saleForm.controls.productId.setValue(this.dataSourceCopy[index].productId);
-    this.saleForm.controls.quantity.setValue(this.dataSourceCopy[index].quantity);
-    this.saleForm.controls.customerId.setValue(this.dataSourceCopy[index].customerId);
-    this.saleForm.controls.date.setValue( this.dataSourceCopy[index].date );
+    console.log(element)
+    this.saleForm.patchValue({
+      productId: element.productId,
+      quantity: element.quantity,
+      customerId: element.customerId,
+      date: element.date,
+    });
+    // console.log(this.saleForm);
 
-    this.productSearchControl.setValue( this.dataSourceCopy[index].product?.name );
-    this.customerSearchControl.setValue( this.dataSourceCopy[index].customer?.name );
+    this.editProductName = element.product?.name || '';
+    this.editCustomerName = element.customer?.name || '';
+
+    this.editScreen = true;
+    this.editId = element.id;
     
     this.isModal = true;
   }
@@ -139,9 +128,7 @@ export class SalesComponent implements OnInit {
           this.fetchAll();
         }, error => this.openSnackBar(error.error.message),
       );
-      this.editScreen = false;
-      this.saleForm.reset();
-      return;
+      return this.modalOpen(false);
     }
 
     this.saleService.Add(
@@ -153,11 +140,7 @@ export class SalesComponent implements OnInit {
         },
             error => this.openSnackBar(error.error.message),
         );
-    this.saleForm.reset();
-  }
-
-  isValid() : boolean {
-    return this.saleForm?.status == "VALID";
+    return this.modalOpen(false);
   }
 
   openSnackBar(message: string) {
@@ -167,29 +150,18 @@ export class SalesComponent implements OnInit {
     });
   }
 
-  private _filterProducts(value: any): any[] {
-    let index = this.allProducts.findIndex(op => op.name === value); //identical
-    if(index != -1) { //match found
-      this.saleForm.controls.productId.setValue( this.allProducts[index].id );
-      return [ this.allProducts[index] ];
-    }
-    this.saleForm.controls.productId.setValue(0);
-    const filterValue = value.toLowerCase();
-    return this.allProducts.filter(option => option.name.toLowerCase().includes(filterValue));
+  modalOpen(bool: boolean) {
+    if(bool) return this.isModal = true;
+    // else
+    this.formReset();
+    this.editScreen = false;
+    this.isModal = false;
+    return;
   }
 
-  private _filterCustomers(value: any): any[] {
-    let index = this.allCustomers.findIndex(op => op.name === value); //identical
-    
-    if(index != -1) { //match found
-      this.saleForm.controls.customerId.setValue( this.allCustomers[index].id );
-      return [ this.allCustomers[index] ];
-    }
-    this.saleForm.controls.customerId.setValue(0);
-    const filterValue = value.toLowerCase();
-
-    return this.allCustomers.filter(option => option.name.toLowerCase().includes(filterValue));
+  formReset() {
+    this.saleForm.reset();
+    this.saleForm.controls.date.setValue(new Date());
   }
 
-  
 }

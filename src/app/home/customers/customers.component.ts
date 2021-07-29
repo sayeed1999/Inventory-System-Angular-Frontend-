@@ -88,9 +88,7 @@ export class CustomersComponent implements OnInit {
           this.fetchAll();
         }, error => this.openSnackBar(error.error.message),
       );
-      this.editScreen = false;
-      this.customerForm.reset();
-      return;
+      return this.modalOpen(false);
     }
 
     this.customerService.Add(
@@ -101,11 +99,7 @@ export class CustomersComponent implements OnInit {
       },
       err => this.openSnackBar(err.error.message)
     );
-    this.customerForm.reset();
-  }
-
-  isValid() : boolean {
-    return this.customerForm?.status == "VALID";
+    return this.modalOpen(false);
   }
 
   openSnackBar(message: string) {
@@ -113,6 +107,15 @@ export class CustomersComponent implements OnInit {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
     });
+  }
+
+  modalOpen(bool: boolean) {
+    if(bool) return this.isModal = true;
+    // else
+    this.editScreen = false;
+    this.isModal = false;
+    this.customerForm.reset();
+    return;
   }
   
 }

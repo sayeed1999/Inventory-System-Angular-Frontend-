@@ -18,6 +18,9 @@ import { DialogComponent } from './shared/dialog/dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SalesComponent } from './home/sales/sales.component';
 import { HttpClientModule } from '@angular/common/http';
+import { MatNativeDateModule } from '@angular/material/core';
+import { CommonDateComponent } from './shared/common-date/common-date.component';
+import { ItemAutocompleteComponent } from './shared/item-autocomplete/item-autocomplete.component';
 
 @NgModule({
   declarations: [
@@ -32,12 +35,15 @@ import { HttpClientModule } from '@angular/common/http';
     MarginTopComponent,
     DialogComponent,
     SalesComponent,
+    CommonDateComponent,
+    ItemAutocompleteComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MaterialModule,
+    MatNativeDateModule,
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,

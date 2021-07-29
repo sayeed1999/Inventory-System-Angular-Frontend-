@@ -1,8 +1,8 @@
+import { ThrowStmt } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 import { Product } from 'src/app/models/Product.model';
 import { Stock } from 'src/app/models/Stock.model';
 import { ProductService } from 'src/app/services/product.service';
@@ -29,12 +29,10 @@ export class StocksComponent implements OnInit {
     productId: new FormControl('', [Validators.required, Validators.min(1)]),
     quantity: new FormControl(0, [Validators.required, Validators.min(0.01)]),
     price: new FormControl(0, [Validators.required, Validators.min(1)]),
-    date: new FormControl('', [Validators.required]),
+    date: new FormControl(new Date(), [Validators.required]),
   });
 
   allProducts: Product[] = [];
-  filteredProducts!: Observable<Product[]>;
-  productSearchControl = new FormControl('');
 
   constructor(
     private stockService: StockService,
@@ -66,11 +64,6 @@ export class StocksComponent implements OnInit {
       error => this.openSnackBar(error.error.message)
     );
 
-    this.filteredProducts = this.productSearchControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filterProducts(value))
-      );
   }
 
   searchingByProduct() {
@@ -89,6 +82,7 @@ export class StocksComponent implements OnInit {
     });
   }
 
+  editProductName: string = '';
   editClicked(index: number)
   {
     this.editScreen = true;
@@ -98,8 +92,8 @@ export class StocksComponent implements OnInit {
     this.stockForm.controls.price.setValue(this.dataSourceCopy[index].price);
     this.stockForm.controls.date.setValue(this.dataSourceCopy[index].date);
 
-    this.productSearchControl.setValue( this.dataSourceCopy[index].product?.name );
-    
+    this.editProductName = this.dataSourceCopy[index].product?.name || '';
+
     this.isModal = true;
   }
 
@@ -117,9 +111,8 @@ export class StocksComponent implements OnInit {
           this.openSnackBar(error.error.message);
         }
       );
-      this.editScreen = false;
-      this.stockForm.reset();
-      return;
+
+      return this.modalOpen(false);
     }
 
     this.stockService.Add(
@@ -131,11 +124,8 @@ export class StocksComponent implements OnInit {
           this.openSnackBar(error.error.message);
         }
       );
-    this.stockForm.reset();
-  }
-
-  isValid() : boolean {
-    return this.stockForm?.status == "VALID";
+    
+      return this.modalOpen(false);
   }
 
   openSnackBar(message: string) {
@@ -145,14 +135,18 @@ export class StocksComponent implements OnInit {
     });
   }
 
-  private _filterProducts(value: string): Product[] {
-    let index = this.allProducts.findIndex(p => p.name === value);
-    if(index != -1) {
-      this.stockForm.controls.productId.setValue( this.allProducts[index].id );
-      return [ this.allProducts[index] ];
-    }
-    this.stockForm.controls.productId.setValue(0);
-    return this.allProducts.filter(product => product.name.toLowerCase().includes( value.toLowerCase() ));
+  modalOpen(bool: boolean) {
+    if(bool) return this.isModal = true;
+    // else
+    this.editScreen = false;
+    this.isModal = false;
+    this.formReset();
+    return;
+  }
+
+  formReset() {
+    this.stockForm.reset();
+    this.stockForm.controls.date.setValue(new Date());
   }
 
 }

@@ -75,9 +75,7 @@ export class CategoriesComponent implements OnInit {
 
   updateDataSource = () => this.dataSourceCopy = [ ...this.dataSource ];
 
-  // Add/Update Category
   onFormSubmit() {
-    // console.log(this.categoryForm) why not show perfect data :(
     this.isModal = false;
 
     let category = new Category(this.editId, this.categoryForm.value.name, this.categoryForm.value.description);
@@ -88,9 +86,8 @@ export class CategoriesComponent implements OnInit {
           this.fetchAll();
         }, error => this.openSnackBar(error.error.message),
       );
-      this.editScreen = false;
-      this.categoryForm.reset();
-      return;
+      
+      return this.modalOpen(false);
     }
     category.id = 0; // don't mess with id
     this.categoryService.Add(category).subscribe(
@@ -101,12 +98,7 @@ export class CategoriesComponent implements OnInit {
         this.openSnackBar(error.error.message);
       }
     );
-    this.categoryForm.reset();
-  }
-
-  isValid() : boolean {
-    // console.log(this.categoryForm) // perfectly shows up!
-    return this.categoryForm?.status == "VALID";
+    return this.modalOpen(false);
   }
 
   openSnackBar(message: string) {
@@ -114,5 +106,14 @@ export class CategoriesComponent implements OnInit {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
     });
+  }
+
+  modalOpen(bool: boolean) {
+    if(bool) return this.isModal = true;
+    // else
+    this.editScreen = false;
+    this.isModal = false;
+    this.categoryForm.reset();
+    return;
   }
 }

@@ -1,0 +1,14 @@
+<mat-form-field class="matFormField">
+    <mat-label> {{ label }} </mat-label>
+    <input type="text"
+        placeholder="Search and Select {{label}}"
+        [formControl]="itemSearchControl"
+        matInput
+        [matAutocomplete]="auto"
+        required>
+    <mat-autocomplete #auto>
+        <mat-option *ngFor="let option of filteredItems | async" [value]="option.name">
+            {{option.name}}
+          </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

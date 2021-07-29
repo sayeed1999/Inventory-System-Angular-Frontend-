@@ -1,4 +1,4 @@
-  <shared-dialog *ngIf="isModal" (emitter)="isModal = $event" >
+  <shared-dialog *ngIf="isModal" (emitter)="modalOpen($event)">
   
     <form fxLayout="column" [formGroup]="customerForm" (ngSubmit)="onFormSubmit()">
       <mat-form-field>
@@ -11,8 +11,8 @@
         <input type="number" matInput name="contact" formControlName="contact" placeholder="contact">
       </mat-form-field>
       <div>
-        <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
-        <button mat-raised-button color="accent" [disabled]="!isValid()" > {{ editScreen ? "Modify" : "Create" }} </button>
+        <button mat-raised-button type="button" (click)="modalOpen(false)">Cancel</button>
+        <button mat-raised-button color="accent" [disabled]="customerForm.invalid" > {{ editScreen ? "Modify" : "Create" }} </button>
       </div>
     </form>
   

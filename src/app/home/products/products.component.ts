@@ -125,8 +125,8 @@ export class ProductsComponent implements OnInit {
           this.fetchAllProducts();
         }, error => this.openSnackBar(error.error.message),
       );
-      this.editScreen = false;
-      this.productForm.reset();
+
+      return this.modalOpen(false);
     }
 
     this.productService.Add(
@@ -139,13 +139,8 @@ export class ProductsComponent implements OnInit {
         this.openSnackBar(error.error.message);
       }
     );
-    this.productForm.reset();
-    this.searchKeyword = ''; this.searchByCategoryId = 0;  
-  }
-
-  isValid() : boolean {
-    // console.log(this.productForm.controls);
-    return this.productForm?.status == "VALID";
+    this.searchKeyword = ''; this.searchByCategoryId = 0;
+    return this.modalOpen(false);
   }
 
   openSnackBar(message: string) {
@@ -153,6 +148,15 @@ export class ProductsComponent implements OnInit {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
     });
+  }
+
+  modalOpen(bool: boolean) {
+    if(bool) return this.isModal = true;
+    // else
+    this.editScreen = false;
+    this.isModal = false;
+    this.productForm.reset();
+    return;
   }
   
 }

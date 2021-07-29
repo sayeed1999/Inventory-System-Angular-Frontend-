@@ -19,6 +19,6 @@ mat-form-field {
     margin: 4px 0;
 }
 
-form > mat-form-field {
+form > mat-form-field, .matFormField {
     width: 100% !important;
 }

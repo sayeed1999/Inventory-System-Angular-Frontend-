@@ -1,50 +1,34 @@
-<shared-dialog *ngIf="isModal" (emitter)="isModal = $event" >
+<shared-dialog *ngIf="isModal" (emitter)="modalOpen($event)" >
   
     <form fxLayout="column" [formGroup]="saleForm" (ngSubmit)="onFormSubmit()">
       
-      <mat-form-field>
-        <mat-label>Product</mat-label>
-        <input type="text"
-               placeholder="Search and Select Product"
-               matInput
-               [formControl]="productSearchControl"
-               [matAutocomplete]="auto"
-               required>
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let option of filteredProducts | async" [value]="option.name">
-            {{option.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+      <item-autocomplete
+        [label]="'Product'"
+        [name]="editScreen ? editProductName : ''"
+        [allItems]="allProducts"
+        (emitter)="saleForm.controls.productId.setValue( $event )"
+      ></item-autocomplete>
 
       <mat-form-field>
         <mat-label>Quantity</mat-label>
-        <input type="number" matInput name="Quantity" formControlName="quantity" placeholder="Quantity">
+        <input type="number" matInput name="Quantity" formControlName="quantity" placeholder="Quantity" required>
       </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>Customer</mat-label>
-        <input type="text"
-               placeholder="Search and Select Customer"
-               matInput
-               [formControl]="customerSearchControl"
-               [matAutocomplete]="auto2"
-               required>
-        <mat-autocomplete #auto2="matAutocomplete">
-          <mat-option *ngFor="let option of filteredCustomers | async" [value]="option.name">
-            {{option.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+      <item-autocomplete
+        [label]="'Customer'"
+        [name]="editScreen ? editCustomerName : ''"
+        [allItems]="allCustomers"
+        (emitter)="saleForm.controls.customerId.setValue( $event )"
+      ></item-autocomplete>
 
-      <mat-form-field>
-        <mat-label>Date</mat-label>
-        <input type="date" matInput name="date" formControlName="date" placeholder="Pick a Date">
-      </mat-form-field>
+      <common-date
+        [control]="saleForm.controls.date.value"
+        (emitter)="saleForm.controls.date.setValue( $event )"
+      ></common-date>
       
       <div>
-        <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
-        <button mat-raised-button color="accent" [disabled]="!isValid()" > {{ editScreen ? "Modify" : "Create" }} </button>
+        <button mat-raised-button type="button" (click)="modalOpen(false)">Cancel</button>
+        <button mat-raised-button color="accent" [disabled]="saleForm.invalid" > {{ editScreen ? "Modify" : "Create" }} </button>
       </div>
 
     </form>
@@ -115,8 +99,8 @@
 
       <ng-container matColumnDef="Edit">
         <th mat-header-cell *matHeaderCellDef> Edit </th>
-        <td mat-cell *matCellDef="let element; let i=index;">
-          <button mat-icon-button (click)="editClicked( i )">
+        <td mat-cell *matCellDef="let element;">
+          <button mat-icon-button (click)="editClicked( element )">
             <mat-icon>edit</mat-icon>
           </button>
         </td>

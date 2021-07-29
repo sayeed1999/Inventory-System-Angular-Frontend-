@@ -1,21 +1,13 @@
-<shared-dialog *ngIf="isModal" (emitter)="isModal = $event" >
+<shared-dialog *ngIf="isModal" (emitter)="modalOpen($event)" >
   
     <form fxLayout="column" [formGroup]="stockForm" (ngSubmit)="onFormSubmit()">
 
-      <mat-form-field class="example-full-width">
-        <mat-label>Product</mat-label>
-        <input type="text"
-               placeholder="Search and Select Product"
-               matInput
-               [formControl]="productSearchControl"
-               [matAutocomplete]="auto"
-               required>
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let option of filteredProducts | async" [value]="option.name">
-            {{option.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+      <item-autocomplete
+        [label]="'Product'"
+        [name]="editScreen ? editProductName : ''"
+        [allItems]="allProducts"
+        (emitter)="stockForm.controls.productId.setValue( $event )"
+      ></item-autocomplete>
 
       <mat-form-field>
         <input type="number" matInput name="quantity" formControlName="quantity" placeholder="quantity">
@@ -25,13 +17,14 @@
         <input type="number" matInput name="price" formControlName="price" placeholder="price">
       </mat-form-field>
 
-      <mat-form-field>
-        <input type="date" matInput name="date" formControlName="date" placeholder="date">
-      </mat-form-field>
+      <common-date
+        [control]="stockForm.controls.date.value"
+        (emitter)="stockForm.controls.date.setValue($event)"
+      ></common-date>
 
       <div>
-        <button mat-raised-button type="button" (click)="isModal = false">Cancel</button>
-        <button mat-raised-button color="accent" [disabled]="!isValid()" > {{ editScreen ? "Modify" : "Create" }} </button>
+        <button mat-raised-button type="button" (click)="modalOpen(false)">Cancel</button>
+        <button mat-raised-button color="accent" [disabled]="stockForm.invalid" > {{ editScreen ? "Modify" : "Create" }} </button>
       </div>
 
     </form>
